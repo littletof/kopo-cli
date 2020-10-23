@@ -18,6 +18,7 @@ export enum State {
     select_registry = 'select_registry',
     registry_home = 'registry_home',
     search_module = 'search_module',
+    search_module_input = 'search_module_input',
     module_info = 'module_info',
     exit = 'exit'
 }

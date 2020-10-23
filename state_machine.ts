@@ -1,6 +1,6 @@
 import { Input, Select } from "./deps.ts";
 import { MenuItem, State, StateAction, WorkingMemory } from "./types.ts";
-import { backspace, menuState } from "./utils.ts";
+import { backspace, menuState, separator } from "./utils.ts";
 
 export const stateMachine: {[key: string]: StateAction} = {
     [State.select_registry]: async (workingMem: WorkingMemory, selectedMenu: string) => {
@@ -19,19 +19,20 @@ export const stateMachine: {[key: string]: StateAction} = {
             case MenuItem.next_page: workingMem.page!++; break;
             case MenuItem.prev_page: workingMem.page!--; break;
             case MenuItem.back: workingMem.state = State.select_registry; break;
-            case MenuItem.search_module: workingMem.state = State.search_module; break;
+            case MenuItem.search_module: workingMem.state = State.search_module_input; break;
             default: workingMem.state = State.module_info; workingMem.selectedModule = selectedMenu; break;
         }
     },
+    [State.search_module_input]: (workingMem: WorkingMemory) => {workingMem.state = State.search_module},
     [State.search_module]: async (workingMem: WorkingMemory, selectedMenu: string) => {
         switch (selectedMenu) {
-            case MenuItem.back: workingMem.state = State.registry_home; break;
+            case MenuItem.back: workingMem.query = undefined; workingMem.state = State.registry_home; break;
             default: workingMem.state = State.module_info; workingMem.selectedModule = selectedMenu; break;
         }
     },
     [State.module_info]: async (workingMem: WorkingMemory, selectedMenu: string) => {
         switch (selectedMenu) {
-            case MenuItem.back: workingMem.state = State.registry_home; break;
+            case MenuItem.back: workingMem.state = workingMem.query ? State.search_module : State.registry_home; break;
             default: await workingMem.moduleInfoActions![selectedMenu](); break;
         }
     },
@@ -43,9 +44,11 @@ export async function getMenu(workingMem: WorkingMemory) {
         case State.select_registry:
             return {
                 title: 'Select registry', 
-                options: [ 
-                    ...Object.keys(workingMem.registries).map(r => ({name: workingMem.registries[r].name, value: r})), 
-                    Select.separator("----"),
+                options: [
+                    Select.separator(""),
+                    ...Object.keys(workingMem.registries).map(r => ({name: workingMem.registries[r].name, value: r})),
+                    Select.separator(""),
+                    Select.separator(separator()),
                     {name: 'Exit', value: MenuItem.exit}
                 ]};
         case State.registry_home:
@@ -65,12 +68,15 @@ export async function getMenu(workingMem: WorkingMemory) {
                     { name: "Back", value: MenuItem.back},
                 ],
             };
-        case State.search_module:
+        case State.search_module_input:
             workingMem.query = await Input.prompt(`${backspace(5)}Searching for module: `);
             workingMem.page = 1;
-            const qMenu = await workingMem.registries[workingMem.registry!].getModulesPage(workingMem, workingMem.page, workingMem.pageSize!, workingMem.query);
+            return;
+        case State.search_module:
+            const qMenu = await workingMem.registries[workingMem.registry!].getModulesPage(workingMem, workingMem.page!, workingMem.pageSize!, workingMem.query);
             return {
-                title: `Searching in ${workingMem.registry} for: "${workingMem.query}"`, options: [
+                title: `Searching in ${workingMem.registry} for: "${workingMem.query}"`,
+                options: [
                     Select.separator(""),
                     ...qMenu,
                     Select.separator(""),

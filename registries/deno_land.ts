@@ -1,5 +1,5 @@
 import {colors} from '../deps.ts';
-import {fetchJSON, fetchText} from '../utils.ts';
+import {fetchJSON, fetchText, separator} from '../utils.ts';
 import type { RegistryDef, WorkingMemory } from '../types.ts';
 
 const modulesApiUrl = 'https://api.deno.land/modules';
@@ -15,7 +15,10 @@ export const deno_land: RegistryDef = {
         return (response.data.results  as any[]).map(m => moduleToSelectOption(m));
     },
     showInfoPage: async (workingMem: WorkingMemory, module: string) => {
-        console.log();
+        const actions: any = [];
+        workingMem.moduleInfoActions = {};
+
+        console.log('\n');
         // https://cdn.deno.land/MODULE/meta/versions.json
         // https://api.deno.land/modules/MODULE
         // https://cdn.deno.land/MODULE/versions/v0.3.0/meta/meta.json
@@ -28,27 +31,29 @@ export const deno_land: RegistryDef = {
         const uploadedAt = moduleInfo.uploaded_at;
 
         const apiModule = await fetchJSON(`${modulesApiUrl}/${module}`);
-        const repo =  moduleInfo.upload_options.type === 'github' ? `https://github.com/${moduleInfo.upload_options.repository}`: `${moduleInfo.upload_options.type} - ${moduleInfo.upload_options.repository}`;
-        const readmes = findReadmes(moduleInfo.directory_listing);            
+
+        let repo = '-';
+        if(latestVersion) {
+            repo =  moduleInfo.upload_options?.type === 'github' ? `https://github.com/${moduleInfo.upload_options.repository}`: `${moduleInfo.upload_options.type} - ${moduleInfo.upload_options.repository}`;
+            const readmes = findReadmes(moduleInfo.directory_listing);
+
+            if(readmes.length > 0) {
+                workingMem.moduleInfoActions['readme'] = async () => {
+                    const readmeText = await fetchText(`${cdnUrl}/${module}/versions/${latestVersion}/raw${readmes[0].path.replace('../', '/')}`);
+                    console.log();
+                    console.log(readmeText);
+                }
+                actions.push({name: 'Show raw readme', value: 'readme'});
+            }
+        }            
 
         console.log(`Module: ${colors.bold(colors.magenta(module))}`);
         console.log(`Stars: ${JSON.stringify(apiModule.data.star_count)}${colors.yellow('⭐')}`);
-        console.log(`Version: [${colors.yellow(latestVersion)}] (${uploadedAt})`);
+        console.log(`Version: ${latestVersion ? `[${colors.yellow(latestVersion)}] (${uploadedAt})` : colors.red(`No uploaded version`)}`);
         console.log(`Repo: ${colors.brightCyan(repo)}`);
         console.log(`Description: ${apiModule.data.description}`);
-        console.log('-'.repeat(20));
-
-        const actions: any = [];
-        workingMem.moduleInfoActions = {};
-
-        if(readmes.length > 0) {
-            workingMem.moduleInfoActions['readme'] = async () => {
-                const readmeText = await fetchText(`${cdnUrl}/${module}/versions/${latestVersion}/raw${readmes[0].path.replace('../', '/')}`);
-                console.log();
-                console.log(readmeText);
-            }
-            actions.push({name: 'Show raw readme', value: 'readme'});
-        }
+        console.log();
+        console.log(separator()); 
         
         return actions;
     }

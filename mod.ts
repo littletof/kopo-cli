@@ -70,12 +70,16 @@ let selectedMenu;
 while(selectedMenu !== MenuItem.exit) {
   selectedMenu = await showModuleMenu(workingMemory);
   console.log(`\r${upInCL(2)}`);
-  await stateMachine[workingMemory.state](workingMemory, selectedMenu);
+  await stateMachine[workingMemory.state](workingMemory, selectedMenu!);
 }
 
 async function showModuleMenu(workingMem: WorkingMemory) {
 
     const currentMenu = await getMenu(workingMem);
+
+    if(!currentMenu) {
+        return;
+    }
 
     return await Select.prompt({
       message: `${backspace(5)}${currentMenu?.title}`,
