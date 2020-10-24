@@ -10,7 +10,17 @@ It currently supports `deno.land/x` and `x.nest.land`.
 
 ## Usage
 
-Run from the url: **TODO** or install it like: **TODO**
+Run from the url:
+
+```bash
+deno run --unstable --allow-net https://deno.land/x/kopo
+```
+
+or install it like:
+
+```bash
+deno install --unstable --allow-net -f https://deno.land/x/kopo kopo
+```
 
 ## Features
 
@@ -57,6 +67,6 @@ A table could look something like this:
 | 💾 \`--allow-write\` | _ | Save favourites |
 | ⏱ \`--allow-hrtime\` | _ | Allows precise benchmarking |
 | ⚠ \`--allow-run\` | _ | Needed for feature x |
-| 🔮 \`--allow-all\` | _ | It should never be required |
 | 🧭 \`--allow-env\` | _ | Needed to access your ENV |
-| 🧩 \`--allow-plugin\` | _ | Needed to run RUST plugins |
+| 🧩 \`--allow-plugin\` | _ | Needed to use RUST plugins |
+| 🔮 \`--allow-all\` | _ | It should never be required |
