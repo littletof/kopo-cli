@@ -2,7 +2,7 @@
 import {colors} from '../deps.ts';
 import {fetchJSON, fetchText, separator} from '../utils.ts';
 import type { RegistryDef, WorkingMemory } from '../types.ts';
-import { flagToEmoji, getFlags } from "../flag_parser.ts";
+import { flagToEmoji, getFlags, toEmojiList } from "../flag_parser.ts";
 
 const modulesApiUrl = 'https://api.deno.land/modules';
 const cdnUrl = 'https://cdn.deno.land';
@@ -60,7 +60,7 @@ export const deno_land: RegistryDef = {
         console.log(`Description: ${apiModule.data.description}`);
         
         if(flags) {
-            console.log(`Flags: ${flags.required?.map(f => flagToEmoji(f.flag)).join(" ")} (${flags.optional?.map(f => flagToEmoji(f.flag)).join(" ")})`);
+            console.log(`Flags: ${toEmojiList(flags)}`);
         }
         
         console.log();

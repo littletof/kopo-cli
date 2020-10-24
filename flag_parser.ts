@@ -17,6 +17,10 @@ export function flagToEmoji(flag: string) {
     return FtoEMap[flag];
 }
 
+export function toEmojiList(flags: {required: {flag: string, description?: string}[], optional: {flag: string, description?: string}[]}) {
+    return `${flags.required?.map(f => flagToEmoji(f.flag)).join(" ")}` + (flags.optional.length ? ` (${flags.optional?.map(f => flagToEmoji(f.flag)).join(" ")})` : '');
+}
+
 export function getFlags(text: string) {
     var result;
     const required = [];
