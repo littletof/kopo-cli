@@ -28,7 +28,7 @@ export function getFlags(text: string) {
             description: result[3]
         }
 
-        if(result[2].includes('-')){ return; }
+        if(result[2].includes('_')){ continue; }
 
         if(result[2].includes('*')) {
             required.push(flag);

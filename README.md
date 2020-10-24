@@ -61,12 +61,12 @@ A table could look something like this:
 
 |Flag| R |Reason|
 |:--|:-:|:--|
-| 🚧 \`--unstable\` | * | Needed for [Cliffy](https://github.com/c4spar/deno-cliffy) to work |
-| 🌐 \`--allow-net\` | * | To fetch data from the repos |
-| 🔍 \`--allow-read\` | _ | Needed for cache info |
-| 💾 \`--allow-write\` | _ | Save favourites |
-| ⏱ \`--allow-hrtime\` | _ | Allows precise benchmarking |
-| ⚠ \`--allow-run\` | _ | Needed for feature x |
-| 🧭 \`--allow-env\` | _ | Needed to access your ENV |
-| 🧩 \`--allow-plugin\` | _ | Needed to use RUST plugins |
-| 🔮 \`--allow-all\` | _ | It should never be required |
+| 🚧 `--unstable` | * | Needed for [Cliffy](https://github.com/c4spar/deno-cliffy) to work |
+| 🌐 `--allow-net` | * | To fetch data from the repos |
+| 🔍 `--allow-read` | _ | Needed for cache info |
+| 💾 `--allow-write` | _ | Save favourites |
+| ⏱ `--allow-hrtime` | _ | Allows precise benchmarking |
+| ⚠ `--allow-run` | _ | Needed for feature x |
+| 🧭 `--allow-env` | _ | Needed to access your ENV |
+| 🧩 `--allow-plugin` | _ | Needed to use RUST plugins |
+| 🔮 `--allow-all` | _ | It should never be required |
