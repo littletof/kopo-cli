@@ -42,15 +42,18 @@ export const stateMachine: {[key: string]: StateAction} = {
 export async function getMenu(workingMem: WorkingMemory) {
     switch(workingMem.state) {
         case State.select_registry:
+            const registriesAsMenuItems = Object.keys(workingMem.registries).map(r => ({name: workingMem.registries[r].name, value: r}));
             return {
                 title: 'Select registry', 
                 options: [
                     Select.separator(""),
-                    ...Object.keys(workingMem.registries).map(r => ({name: workingMem.registries[r].name, value: r})),
+                    ...registriesAsMenuItems,
                     Select.separator(""),
                     Select.separator(separator()),
                     {name: 'Exit', value: MenuItem.exit}
-                ]};
+                ],
+                default: registriesAsMenuItems[0].name
+            };
         case State.registry_home:
             const rMenu = await workingMem.registries[workingMem.registry!].getModulesPage(workingMem, workingMem.page!, workingMem.pageSize!);
             const totalPages = Math.ceil(workingMem.totalModules! / workingMem.pageSize!);

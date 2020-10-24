@@ -4,39 +4,7 @@ import { nest_land } from "./registries/nest_land.ts";
 import {stateMachine, getMenu} from './state_machine.ts';
 import { MenuItem, State, WorkingMemory } from "./types.ts";
 import { backspace, upInCL } from "./utils.ts";
-
-/*
-                              __ 
-        /\__/\               / /
-    ___[.][.] |             / /
-   |**        \____________/ /
-    vvvv                    \
-        \                    \
-         |  |  |_________|   |
-         / /|  /     /  /|   /
-        | | | |      | | |  |
-        /_/ /_/      /_/ /_/
-
-
-              KOPO CLI
-*/
-/*
-                               __ 
-         /\__/\               / /
-    ..__[.][.] |             / /
-   |           \____________/ /
-    \U__                     \
-        \                     \
-         |  |  |__________|   |
-         / /|  /      /  /|   /
-        | | | |       | | |  |
-        /_/ /_/       /_/ /_/
-
-
-              KOPO CLI
-*/
 /*  
-
 
         /\  /\
        |  ||  |
@@ -45,7 +13,7 @@ import { backspace, upInCL } from "./utils.ts";
   \_____         \______________________/  /
         |                                 /
         \                                 |
-         \                                |                                          
+         \                                |
          |    |       _____________|      /
       ____|__/    ___/         \_  \     |
      / __________/               \  |\   |
@@ -53,7 +21,8 @@ import { backspace, upInCL } from "./utils.ts";
           |  |                   |  | |  |
         _/  /                  _/  / _/  /
        |___/                  |___/ |___/        
-
+____________________________________________________
+                    KOPO CLI
 */
 
 const workingMemory: WorkingMemory = {

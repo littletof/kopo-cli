@@ -61,7 +61,7 @@ export const deno_land: RegistryDef = {
 
 function moduleToSelectOption(module: {name: string, star_count: number, description: string}) {
     return {
-        name: `${colors.green(module.name.padEnd(18))} ${`${colors.white(module.star_count.toString())}${colors.yellow("⭐")}`.padStart(26)} - ${(module.description as string)?.slice(0, 50)}`,
+        name: `${colors.green(module.name.padEnd(18))} ${module.star_count ? `${colors.white(module.star_count.toString())}${colors.yellow("⭐")}`.padStart(26) : ''.padStart(7)} - ${(module.description as string)?.slice(0, 50)}`,
         value: module.name
     };
 }
