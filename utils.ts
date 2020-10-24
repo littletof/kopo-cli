@@ -1,3 +1,4 @@
+// Copyright 2020- Szalay Kristóf. All rights reserved. MIT license.
 import { colors } from './deps.ts';
 
 

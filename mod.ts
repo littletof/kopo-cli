@@ -1,3 +1,4 @@
+// Copyright 2020- Szalay Kristóf. All rights reserved. MIT license.
 import { Select } from './deps.ts';
 import { deno_land } from "./registries/deno_land.ts";
 import { nest_land } from "./registries/nest_land.ts";

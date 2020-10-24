@@ -1,3 +1,4 @@
+// Copyright 2020- Szalay Kristóf. All rights reserved. MIT license.
 import { Input, Select } from "./deps.ts";
 import { MenuItem, State, StateAction, WorkingMemory } from "./types.ts";
 import { backspace, menuState, separator } from "./utils.ts";

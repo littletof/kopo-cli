@@ -1,3 +1,4 @@
+// Copyright 2020- Szalay Kristóf. All rights reserved. MIT license.
 const FtoEMap: any = {
     "--unstable": '🚧',
      "--allow-net": "🌐",
