@@ -13,13 +13,13 @@ It currently supports `deno.land/x` and `x.nest.land`.
 Run from the url:
 
 ```bash
-deno run --unstable --allow-net https://deno.land/x/kopo
+deno run --unstable --allow-net https://deno.land/x/kopo/mod.ts
 ```
 
 or install it like:
 
 ```bash
-deno install --unstable --allow-net -f https://deno.land/x/kopo kopo
+deno install --unstable --allow-net -f https://deno.land/x/kopo/mod.ts kopo
 ```
 
 ## Features
