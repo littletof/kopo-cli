@@ -40,7 +40,6 @@ Features depend on the capabilities of the browsed module repository.
 - Search through the modules with a keyword
 - Display basic information about the module
 
-
 ### 🚩 Flags
 
 > 🚧 This is just an experimental feature 🚧
@@ -70,3 +69,11 @@ A table could look something like this:
 | 🧭 `--allow-env` | _ | Needed to access your ENV |
 | 🧩 `--allow-plugin` | _ | Needed to use RUST plugins |
 | 🔮 `--allow-all` | _ | It should never be required |
+
+## Contribution
+
+Issues, pull requests and feedback are always welcome.
+
+## Licence
+
+Copyright 2020- Szalay Kristóf. All rights reserved. MIT license.
