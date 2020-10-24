@@ -2,6 +2,8 @@
 
 *A Deno registry browser in the terminal*
 
+ ![showcase](docs/showcase.png)
+
 ## Description
 
 `kopo` is a tool, which helps you browse the Deno registries in your terminal, search for a specific module.
