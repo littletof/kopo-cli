@@ -1,0 +1,10 @@
+{
+  "name": "kopo",
+  "description": "🐶 A Deno registry browser in the terminal",
+  "homepage": "https://github.com/littletof/kopo-cli",
+  "files": [
+    "./**/*.ts",
+    "README.md"
+  ],
+  "entry": "./mod.ts"
+}
