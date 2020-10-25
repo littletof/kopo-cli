@@ -2,7 +2,10 @@
 
 *A Deno registry browser in the terminal*
 
- ![showcase](docs/showcase.png)
+[![deno badge](https://img.shields.io/badge/deno.land/x-success?logo=deno&logoColor=black&labelColor=white&color=black)](https://deno.land/x/kopo)
+[![nest badge](https://nest.land/badge.svg)](https://nest.land/package/kopo)
+
+![showcase](docs/showcase.png)
 
 ## Description
 
@@ -46,7 +49,7 @@ Features depend on the capabilities of the browsed module repository.
 
 > 🚧 This is just an experimental feature 🚧
 
-This proposes a concept, where each module describes what are its required and optional flags in a parseable way.
+This proposes a concept, where each module describes what its required and optional flags are in a parseable way.
 
 #### How it works
 

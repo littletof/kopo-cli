@@ -1,0 +1,27 @@
+{
+  "$schema": "https://x.nest.land/eggs@0.3.0/src/schema.json",
+  "name": "kopo",
+  "description": "A Deno registry browser in the terminal",
+  "homepage": "https://github.com/littletof/kopo-cli",
+  "version": "v0.0.2",
+  "unstable": true,
+  "files": [
+    "./docs/**/*",
+    "./registries/*",
+    "./deps.ts",
+    "./flag_parser.ts",
+    "./LICENSE",
+    "./mod.ts",
+    "./README.md",
+    "./state_machine.ts",
+    "./types.ts",
+    "./utils.ts"
+  ],
+  "checkFormat": false,
+  "checkTests": false,
+  "checkInstallation": false,
+  "check": true,
+  "entry": "/mod.ts",
+  "ignore": [],
+  "unlisted": false
+}
