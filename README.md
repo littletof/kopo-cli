@@ -44,6 +44,8 @@ Features depend on the capabilities of the browsed module repository.
 - Browse a paginated list of the modules
 - Search through the modules with a keyword
 - Display basic information about the module
+- Show the raw README of the module, if one exists in the module's repo
+- Show the parsed flags from the README if provided.
 
 ### 🚩 Flags
 
