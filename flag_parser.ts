@@ -11,7 +11,7 @@ const FtoEMap: any = {
      "--allow-plugin": "🧩",
 }
 
-const flagRegexp = new RegExp(/\| .*\s?\`(--[^`]*)\` \|([\s_\*]*)\|(?:([^\|\n]*)\|)?/g);
+const flagRegexp = new RegExp(/\| .*\s?\`(--[^`]*)\`\s*\|([\s_\*(?:Y|yes)]*)\|(?:([^\|\n]*)\|)?/g);
 
 export function flagToEmoji(flag: string) {
     return FtoEMap[flag];
@@ -29,12 +29,14 @@ export function getFlags(text: string) {
     while((result = flagRegexp.exec(text)) !== null) {
         const flag = {
             flag: result[1],
-            description: result[3]
+            description: result[3].trim()
         }
 
+        // _ -> ignore
         if(result[2].includes('_')){ continue; }
 
-        if(result[2].includes('*')) {
+        // \* or yes -> required
+        if(/\s*(\*|[Yy]es)\s*/.test(result[2])) {
             required.push(flag);
         } else {
             optional.push(flag);

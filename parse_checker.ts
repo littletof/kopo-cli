@@ -1,4 +1,4 @@
-import { getFlags } from './flag_parser.ts';
+import { getFlags, toEmojiList } from './flag_parser.ts';
 
 if(!Deno.args?.[0]) {
     console.log('Please provide a path or url to the file to test');
@@ -21,6 +21,7 @@ try {
     if(flags) {
         console.log('The retrieved flags: \n');
         console.log(flags);
+        console.log(`\nAs emojis: ${toEmojiList(flags)}`);
         console.log('\n');
     } else {
         console.log('\nCouldn\'t retrieve any flags\n');
