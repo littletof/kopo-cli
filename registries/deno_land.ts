@@ -12,9 +12,8 @@ export const deno_land: RegistryDef = {
     init: (workingMem: WorkingMemory) => {},
     getModulesPage: async (workingMem: WorkingMemory, page: number, pageSize: number, query?: string) => {
         const response = await fetchJSON(`${modulesApiUrl}?page=${page}&limit=${pageSize}${query? `&query=${query}`: ""}`);
-
-        workingMem.totalModules = response.data.total_count;
-        return (response.data.results  as any[]).map(m => moduleToSelectOption(m));
+        workingMem.totalModules = response.data?.total_count || 0;
+        return (response.data?.results  as any[] || []).map(m => moduleToSelectOption(m));
     },
     showInfoPage: async (workingMem: WorkingMemory, module: string) => {
         const actions: any = [];
@@ -46,6 +45,7 @@ export const deno_land: RegistryDef = {
                 workingMem.moduleInfoActions['readme'] = () => {
                     console.log();
                     console.log(readmeText);
+                    console.log(colors.gray('--------------- End of README ---------------'));
                 }
                 actions.push({name: 'Show raw readme', value: 'readme'});
 
@@ -54,7 +54,7 @@ export const deno_land: RegistryDef = {
         }            
 
         console.log(`Module: ${colors.bold(colors.magenta(module))}`);
-        console.log(`Stars: ${JSON.stringify(apiModule.data.star_count)}${colors.yellow('⭐')}`);
+        console.log(`Stars: ${JSON.stringify(apiModule.data.star_count || 0)}${colors.yellow('⭐')}`);
         console.log(`Version: ${latestVersion ? `[${colors.yellow(latestVersion)}] (${uploadedAt})` : colors.red(`No uploaded version`)}`);
         console.log(`Repo: ${colors.brightCyan(repo)}`);
         console.log(`Description: ${apiModule.data.description}`);
@@ -72,7 +72,7 @@ export const deno_land: RegistryDef = {
 
 function moduleToSelectOption(module: {name: string, star_count: number, description: string}) {
     return {
-        name: `${colors.green(module.name.padEnd(18))} ${module.star_count ? `${colors.white(module.star_count.toString())}${colors.yellow("⭐")}`.padStart(26) : ''.padStart(7)} - ${(module.description as string)?.slice(0, 50)}`,
+        name: `${colors.green(module.name.padEnd(18))} ${`${colors.white(module.star_count?.toString() || "0")}${colors.yellow("⭐")}`.padStart(26)} - ${(module.description as string)?.slice(0, 50)}`,
         value: module.name
     };
 }

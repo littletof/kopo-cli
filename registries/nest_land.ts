@@ -16,7 +16,7 @@ export const nest_land: RegistryDef<NestWorkingMem> = {
         workingMem.totalModules = response.length;
     },
     getModulesPage: (workingMem: NestWorkingMem, page: number, pageSize: number, query?: string) => {
-        const filteredModules = query ? (workingMem.nestModules as any[]).filter(m => (m.name as string).indexOf(query) !== -1 || m.description.indexOf(query) !== -1) : (workingMem.nestModules as any[]);
+        const filteredModules = query ? (workingMem.nestModules as any[]).filter(m => (m.name as string)?.indexOf(query) !== -1 || m.description?.indexOf(query) !== -1) : (workingMem.nestModules as any[]);
         const modulesOnPage = (filteredModules as any[]).slice((page-1) * pageSize, Math.min(filteredModules.length, page * pageSize));
         return modulesOnPage.map(m => ({name: `${colors.green(m.name.padEnd(15))} - ${(m.description as string)?.slice(0, 50)}`, value: m.name}));
     },
@@ -40,6 +40,7 @@ export const nest_land: RegistryDef<NestWorkingMem> = {
                 workingMem.moduleInfoActions['readme'] = () => {
                     console.log();
                     console.log(readmeText);
+                    console.log(colors.gray('--------------- End of README ---------------'));
                 }
                 actions.push({name: 'Show raw readme', value: 'readme'});
 
