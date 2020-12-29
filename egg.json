@@ -22,7 +22,7 @@
   "checkTests": false,
   "checkInstallation": false,
   "check": true,
-  "entry": "/mod.ts",
+  "entry": "./mod.ts",
   "ignore": [],
   "unlisted": false
 }
