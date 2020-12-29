@@ -45,7 +45,7 @@ export const deno_land: RegistryDef = {
                 workingMem.moduleInfoActions['readme'] = () => {
                     console.log();
                     console.log(readmeText);
-                    console.log('--------------- End of README ---------------');
+                    console.log(colors.gray('--------------- End of README ---------------'));
                 }
                 actions.push({name: 'Show raw readme', value: 'readme'});
 
