@@ -77,7 +77,7 @@ A table could look something like this:
 | 🧩 `--allow-plugin` | _ | Needed to use RUST plugins |
 | 🔮 `--allow-all` | _ | It should never be required |
 
-##### Testing your file for flags
+#### Testing your file for flags
 
 There is a small util that you can use to test your file for the flags. It can be found [here](./flag_checker.ts).
 
