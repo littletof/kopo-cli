@@ -1,5 +1,5 @@
 {
-  "$schema": "https://x.nest.land/eggs@0.3.0/src/schema.json",
+  "$schema": "https://x.nest.land/eggs@0.3.3/src/schema.json",
   "name": "kopo",
   "description": "A Deno registry browser in the terminal",
   "homepage": "https://github.com/littletof/kopo-cli",
