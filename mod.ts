@@ -34,7 +34,7 @@ const workingMemory: WorkingMemory = {
     }
 };
 
-Deno.stdout.writeSync = ((x: any) => { console.log(new TextDecoder().decode(x) + upInCL(1));}) as any;
+Deno.stdout.write = ((x: any) => { console.log(new TextDecoder().decode(x) + upInCL(1));}) as any;
 
 let selectedMenu;
 while(selectedMenu !== MenuItem.exit) {

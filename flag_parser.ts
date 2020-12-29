@@ -11,7 +11,7 @@ const FtoEMap: any = {
      "--allow-plugin": "🧩",
 }
 
-const flagRegexp = new RegExp(/\| .* \`(--[^`]*)\` \|([ _\*]*)\|([^|\n]*\|)?/g);
+const flagRegexp = new RegExp(/\| .*\s?\`(--[^`]*)\` \|([\s_\*]*)\|(?:([^\|\n]*)\|)?/g);
 
 export function flagToEmoji(flag: string) {
     return FtoEMap[flag];
