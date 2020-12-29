@@ -9,6 +9,7 @@
     "./docs/**/*",
     "./registries/*",
     "./deps.ts",
+    "./flag_checker.ts",
     "./flag_parser.ts",
     "./LICENSE",
     "./mod.ts",
