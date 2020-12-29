@@ -18,13 +18,13 @@ It currently supports `deno.land/x` and `x.nest.land`.
 Run from the url:
 
 ```bash
-deno run --unstable --allow-net https://deno.land/x/kopo@v0.0.2/mod.ts
+deno run --unstable --allow-net https://deno.land/x/kopo@v0.0.3/mod.ts
 ```
 
 or install it like:
 
 ```bash
-deno install --unstable --allow-net -f https://deno.land/x/kopo@v0.0.2/mod.ts kopo
+deno install --unstable --allow-net -f https://deno.land/x/kopo@v0.0.3/mod.ts kopo
 ```
 
 ## Features
@@ -84,13 +84,13 @@ There is a small util that you can use to test your file for the flags. It can b
 To use it simply run:
 
 ```bash
-deno run --allow-read https://deno.land/x/kopo@v0.0.2/flag_checker.ts ./README.md
+deno run --allow-read https://deno.land/x/kopo@v0.0.3/flag_checker.ts ./README.md
 ```
 
 or for remote files:
 
 ```bash
-deno run --allow-net https://deno.land/x/kopo@v0.0.2/flag_checker.ts https://raw.githubusercontent.com/littletof/kopo-cli/master/README.md
+deno run --allow-net https://deno.land/x/kopo@v0.0.3/flag_checker.ts https://raw.githubusercontent.com/littletof/kopo-cli/master/README.md
 ```
 
 ## Contribution
