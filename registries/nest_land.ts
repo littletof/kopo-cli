@@ -63,20 +63,20 @@ export const nest_land: RegistryDef<NestWorkingMem> = {
     }
 }
 
-// https://x.nest.land/kopo@v0.0.2/README.md
-// https://nest.land/api/readme?mod=kopo@v0.0.2
+// https://x.nest.land/kopo@v0.0.3/README.md
+// https://nest.land/api/readme?mod=kopo@v0.0.3
 
 /*
-// https://x.nest.land/api/package/kopo/v0.0.2
+// https://x.nest.land/api/package/kopo/v0.0.3
 {
-    "name":"kopo@v0.0.2",
+    "name":"kopo@v0.0.3",
     "package":{
         "name":"kopo",
         "owner":"littletof",
         "description":"A Deno registry browser in the terminal",
         "createdAt":"2020-10-25T13:35:01.706Z"},
         "entry":"/mod.ts",
-        "version":"v0.0.2",
+        "version":"v0.0.3",
         "prefix":"https://arweave.net/jqzFB0x2I9H_iMkO4H5sIvY7vBW30l3gZG01drcyt44",
         "malicious":null,
         "files":{
@@ -105,9 +105,9 @@ https://x.nest.land/api/package/kopo
     "owner":"littletof",
     "description":"A Deno registry browser in the terminal",
     "repository":"https://github.com/littletof/kopo-cli",
-    "latestVersion":"kopo@v0.0.2",
+    "latestVersion":"kopo@v0.0.3",
     "latestStableVersion":null,
-    "packageUploadNames":["kopo@v0.0.2"],
+    "packageUploadNames":["kopo@v0.0.3"],
     "locked":null,
     "malicious":null,
     "unlisted":false,

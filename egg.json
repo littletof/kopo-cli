@@ -3,7 +3,7 @@
   "name": "kopo",
   "description": "A Deno registry browser in the terminal",
   "homepage": "https://github.com/littletof/kopo-cli",
-  "version": "v0.0.2",
+  "version": "v0.0.3",
   "unstable": true,
   "files": [
     "./docs/**/*",
