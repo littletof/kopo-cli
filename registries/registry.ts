@@ -154,7 +154,7 @@ export class DenoRegistry extends Registry {
             >(`https://cdn.deno.land/${moduleName}/versions/${version}/meta/meta.json`);
 
             if(metaInfo) {
-                moduleData.info.repository = metaInfo.upload_options?.repository;
+                moduleData.info.repository = this.getRepositoryPath(metaInfo.upload_options);
                 moduleData.uploadedAt = new Date(metaInfo.uploaded_at);
 
                 const readmePath = this.guessReadmePath(metaInfo.directory_listing.filter(dl => dl.type === "file").map(f => f.path));
@@ -170,6 +170,17 @@ export class DenoRegistry extends Registry {
         }
 
         return moduleData;
+    }
+
+    private getRepositoryPath(upload_options?: {type: string, repository: string, ref: string}): string | undefined {
+        if(!upload_options) {
+            return;
+        }
+
+        switch(upload_options.type) {
+            case "github": return `https://github.com/${upload_options.repository}`
+            default: return `${upload_options.type} - ${upload_options.repository}`;
+        }
     }
 }
 export interface NestModuleInfo {
