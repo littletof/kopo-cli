@@ -4,7 +4,7 @@ import type {Flags} from "../flag_parser.ts";
 
 
 export interface ModulesListPage {
-    modules: any[];
+    modules: any[]; // TODO type
     page: number;
     pageSize: number;
     totalModules: number;
@@ -73,7 +73,7 @@ export abstract class Registry {
 export interface DenoModuleListDataType {
     total_count: number;
     options: {limit?: number, page?: number, sort?: string};
-    results: {name: string, description?: string, start_count?: number}[]
+    results: {name: string, description?: string, start_count?: number, search_score?: number}[]
 }
 export class DenoRegistry extends Registry {
     getWellKnownPath() {
@@ -243,7 +243,7 @@ export class NestRegistry extends Registry {
             return {modules: [], page, pageSize, totalModules: 0, totalPages: 0, query};
         }
 
-        const filteredModules = query ? response.filter(m => (m.name as string)?.indexOf(query) !== -1 || m.description?.indexOf(query) !== -1)
+        const filteredModules = query ? response.filter(m => m.name?.includes(query) || m.description?.includes(query))
                                         : response;
         const modulesOnPage = paginateArray(filteredModules, page, pageSize);
 
