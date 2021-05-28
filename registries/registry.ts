@@ -1,4 +1,6 @@
 import {paginateArray} from "../utils.ts";
+import {getFlags} from "../flag_parser.ts";
+import type {Flags} from "../flag_parser.ts";
 
 
 export interface ModulesListPage {
@@ -23,8 +25,9 @@ export interface ModuleInfo {
     invalidVersion?: boolean;
     currentVersion?: string,
     uploadedAt?: Date;
-    flags?: any[];
-    readme?: string;
+    flags?: Flags;
+    readmePath?: string;
+    readmeText?: string;
 }
 
 export abstract class Registry {
@@ -38,7 +41,7 @@ export abstract class Registry {
     abstract getAllModuleNames(): Promise<string[]>;
     abstract getVersionsOfModule(moduleName: string, version?: string): Promise<string[]>;
 
-    async fetchJSON<T>(path: string, cache?: boolean): Promise<T|undefined> { // TODO cli flag to overwrite cache --no-cache
+    async fetch<T>(path: string, opts?: {cache?: boolean, text?: boolean}): Promise<T|undefined> { // TODO cli flag to overwrite cache --no-cache
         const pathUrl = new URL(path);
         
         if((await Deno.permissions.request({name: "net", host: pathUrl.host})).state !== 'granted') {
@@ -46,13 +49,14 @@ export abstract class Registry {
             return undefined;
         }
 
-        if(cache && Registry.cache.has(path)) {
+        if(opts?.cache && Registry.cache.has(path)) {
             return Registry.cache.get(path) as T;
         }
 
         try {
-            const result = await ((await fetch(pathUrl)).json());
-            if(cache) {
+            const fetched = await fetch(pathUrl)
+            const result = await (opts?.text ? fetched.text() : fetched.json());
+            if(opts?.cache) {
                 Registry.cache.set(pathUrl.toString(), result);
             }
             return result;
@@ -77,7 +81,7 @@ export class DenoRegistry extends Registry {
     }
 
     async getAllModuleNames() {
-        const response = await this.fetchJSON<string[]>("https://api.deno.land/modules?simple=1", true);
+        const response = await this.fetch<string[]>("https://api.deno.land/modules?simple=1", {cache: true});
         if(!response) {
             return [];
         }
@@ -86,7 +90,7 @@ export class DenoRegistry extends Registry {
     }
 
     async getVersionsOfModule(moduleName: string) {
-        const response = await this.fetchJSON<string[]>(`https://deno.land/_vsc1/modules/${moduleName}`, true);
+        const response = await this.fetch<string[]>(`https://deno.land/_vsc1/modules/${moduleName}`, {cache: true});
         if(!response) {
             return [];
         }
@@ -95,7 +99,7 @@ export class DenoRegistry extends Registry {
     }
 
     async getModulesList(query?: string, page: number=1, pageSize: number = 20) {
-        const response = await this.fetchJSON<{success?: boolean; data: DenoModuleListDataType}>(
+        const response = await this.fetch<{success?: boolean; data: DenoModuleListDataType}>(
             `https://api.deno.land/modules?page=${page}&limit=${pageSize}${query? `&query=${query}`: ""}`
         );
         if(!response?.success) {
@@ -119,7 +123,7 @@ export class DenoRegistry extends Registry {
         // https://cdn.deno.land/MODULE/versions/v0.3.0/meta/meta.json -> {uploaded_at, upload_options: {type: github, repository: "denosaurs/cache", ref: "0.2.12"}, directory_listing: {path: "/cache.ts", size: 2240, type: "file/dir"}[]}
         // https://cdn.deno.land/MODULE/versions/v0.3.0/raw/README.md
 
-        const moduleInfo = await this.fetchJSON<{success: boolean, data: {name: string, description?: string, star_count?: number}}>(`https://api.deno.land/modules/${moduleName}`);
+        const moduleInfo = await this.fetch<{success: boolean, data: {name: string, description?: string, star_count?: number}}>(`https://api.deno.land/modules/${moduleName}`);
 
         if(!moduleInfo || !moduleInfo.success) {
             return undefined;
@@ -127,7 +131,7 @@ export class DenoRegistry extends Registry {
 
         const moduleData: Partial<ModuleInfo> = {origin: "DENO"};
 
-        const versionInfo = await this.fetchJSON<{latest: string, versions: string[]}>(`https://cdn.deno.land/${moduleName}/meta/versions.json`);
+        const versionInfo = await this.fetch<{latest: string, versions: string[]}>(`https://cdn.deno.land/${moduleName}/meta/versions.json`);
 
         version = version ?? (versionInfo?.latest || undefined);
 
@@ -145,7 +149,7 @@ export class DenoRegistry extends Registry {
         if(!invalidVersion) {
             moduleData.currentVersion = version;
 
-            const metaInfo = await this.fetchJSON<
+            const metaInfo = await this.fetch<
                 {uploaded_at: string, upload_options: {type: string, repository: string, ref: string}, directory_listing: {path: string, size: number, type: "file" | "dir"}[]}
             >(`https://cdn.deno.land/${moduleName}/versions/${version}/meta/meta.json`);
 
@@ -153,9 +157,14 @@ export class DenoRegistry extends Registry {
                 moduleData.info.repository = metaInfo.upload_options?.repository;
                 moduleData.uploadedAt = new Date(metaInfo.uploaded_at);
 
-                const readme = this.guessReadmePath(metaInfo.directory_listing.filter(dl => dl.type === "file").map(f => f.path));
-                moduleData.readme = readme;
-                // TODO readme
+                const readmePath = this.guessReadmePath(metaInfo.directory_listing.filter(dl => dl.type === "file").map(f => f.path));
+                if(readmePath) {
+                    moduleData.readmePath = readmePath;
+    
+                    const readmeText = await this.fetch<string>(`https://cdn.deno.land/${moduleName}/versions/${version}/raw${readmePath}`, {text: true});
+                    moduleData.readmeText = readmeText;
+                    moduleData.flags = getFlags(readmeText || "");
+                }
             }
 
         }
@@ -199,7 +208,7 @@ export class NestRegistry extends Registry {
     }
 
     async getAllModuleNames() {
-        const response = await this.fetchJSON<string[]>("https://intellisense.nest.land/api/x", true);
+        const response = await this.fetch<string[]>("https://intellisense.nest.land/api/x", {cache: true});
         if(!response) {
             return [];
         }
@@ -208,7 +217,7 @@ export class NestRegistry extends Registry {
     }
 
     async getVersionsOfModule(moduleName: string) {
-        const response = await this.fetchJSON<string[]>(`https://intellisense.nest.land/api/x/${moduleName}`, true);
+        const response = await this.fetch<string[]>(`https://intellisense.nest.land/api/x/${moduleName}`, {cache: true});
         if(!response) {
             return [];
         }
@@ -217,7 +226,7 @@ export class NestRegistry extends Registry {
     }
 
     async getModulesList(query?: string, page: number=1, pageSize: number = 20) {
-        const response = await this.fetchJSON<NestModuleInfo[]>(`https://x.nest.land/api/packages`, true);
+        const response = await this.fetch<NestModuleInfo[]>(`https://x.nest.land/api/packages`, {cache: true});
 
         if(!response) {
             return {modules: [], page, pageSize, totalModules: 0, totalPages: 0, query};
@@ -237,7 +246,7 @@ export class NestRegistry extends Registry {
         };
     }
     async getModuleInfo(moduleName: string, version?: string) {
-        const moduleInfo = await this.fetchJSON<NestModuleInfo>(`https://x.nest.land/api/package/${moduleName}`);
+        const moduleInfo = await this.fetch<NestModuleInfo>(`https://x.nest.land/api/package/${moduleName}`);
         // could use https://intellisense.nest.land/api/x/MODULE, but thats one extra ...
 
         if(!moduleInfo) {
@@ -263,11 +272,17 @@ export class NestRegistry extends Registry {
         if(!invalidVersion) {
             moduleData.currentVersion = version;
 
-            const versionInfo = await this.fetchJSON<NestModuleVersionInfo>(`https://x.nest.land/api/package/${moduleName}/${version}`);
+            const versionInfo = await this.fetch<NestModuleVersionInfo>(`https://x.nest.land/api/package/${moduleName}/${version}`);
             
             if(versionInfo) {
                 moduleData.uploadedAt = new Date(versionInfo.package.createdAt);
-                moduleData.readme = this.guessReadmePath(Object.keys(versionInfo.files).map(k => versionInfo.files[k].inManifest));
+                moduleData.readmePath = this.guessReadmePath(Object.keys(versionInfo.files).map(k => versionInfo.files[k].inManifest));
+                
+                if(moduleData.readmePath) {
+                    const readmeText = await this.fetch<string>(`https://x.nest.land/${moduleName}@${version}${moduleData.readmePath}`, {text: true});
+                    moduleData.readmeText = readmeText;
+                    moduleData.flags = getFlags(readmeText || "");
+                }
             }
         }
 
