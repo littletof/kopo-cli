@@ -4,7 +4,12 @@ import type {Flags} from "../flag_parser.ts";
 
 
 export interface ModulesListPage {
-    modules: any[]; // TODO type
+    modules: {
+        name: string;
+        description?: string;
+        starCount?: number;
+        owner?: string;
+    }[];
     page: number;
     pageSize: number;
     totalModules: number;
@@ -73,7 +78,7 @@ export abstract class Registry {
 export interface DenoModuleListDataType {
     total_count: number;
     options: {limit?: number, page?: number, sort?: string};
-    results: {name: string, description?: string, start_count?: number, search_score?: number}[]
+    results: {name: string, description?: string, star_count?: number, search_score?: number}[]
 }
 export class DenoRegistry extends Registry {
     getWellKnownPath() {
@@ -107,7 +112,7 @@ export class DenoRegistry extends Registry {
         }
 
         return {
-            modules: response.data.results || [],
+            modules: (response.data.results || []).map(d => ({name: d.name, description: d.description, starCount: d.star_count})),
             query,
             page,
             pageSize,
@@ -248,7 +253,7 @@ export class NestRegistry extends Registry {
         const modulesOnPage = paginateArray(filteredModules, page, pageSize);
 
         return {
-            modules: modulesOnPage || [],
+            modules: (modulesOnPage || []).map(d => ({name: d.name, description: d.description, owner: d.owner})),
             query,
             page,
             pageSize,
@@ -303,14 +308,14 @@ export class NestRegistry extends Registry {
     }
 }
 
-{
+/* {
     const dr = new DenoRegistry();
 
-    const d = await dr.getModuleInfo("kopo");
+    const d = await dr.getModulesList("kopo");
     console.log(d);
 
     const nr = new NestRegistry();
 
-    const n = await nr.getModuleInfo("kopo");
+    const n = await nr.getModulesList("kopo");
     console.log(n);
-}
+} */
