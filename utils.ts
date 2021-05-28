@@ -22,6 +22,10 @@ export function menuState(name: string, disabled: boolean) {
     }
 }
 
+export function paginateArray<T>(array: T[], page: number, pageSize: number) {
+    return array.slice((Math.max(0, page)-1) * pageSize, Math.min(array.length, page * pageSize));
+}
+
 export async function fetchJSON(path: string): Promise<any> {
     try {
         return await ((await fetch(path)).json());
