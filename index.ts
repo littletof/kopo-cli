@@ -61,7 +61,7 @@ async function search(args: Args) {
             console.log(`${module.info?.name} @ ${module.currentVersion}`);
             console.log(module.info?.description);
             console.log(`${module.info?.repository}${module.currentVersion !== module.info?.latestVersion ? `/tree/${module.currentVersion}` : ""}`);
-            console.log(`Flags: ${toEmojiList(module.flags)}`)
+            console.log(`Flags: ${toEmojiList(module.flags)}`); // TODO fix
             return;
         }
 
@@ -77,7 +77,7 @@ async function search(args: Args) {
                 return;
             } else {
                 console.log(`Found modules: `);
-                moduleList.modules.forEach(m => console.log(`   - ${`${m.name}:`.padEnd(20)} ${m.description?.slice(0, 70) + (m.description!.length > 70 ? "…": "")}`))
+                moduleList.modules.forEach(m => console.log(`   - ${`${m.name}:`.padEnd(20)} ${m.description?.slice(0, 70) + (!m.description || m.description?.length > 70 ? "…": "")}`))
             }
 
             
@@ -86,6 +86,7 @@ async function search(args: Args) {
         }
     } else {
         // TODO UI
+        console.log("TODO Open UI on search page");
     }
 }
 
