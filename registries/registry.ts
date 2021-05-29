@@ -26,6 +26,8 @@ export interface ModuleInfo {
         latestVersion?: string;
 
         repository?: string;
+        moduleRoute?: string;
+        // importRoute?: string;
     },
     invalidVersion?: boolean;
     currentVersion?: string,
@@ -148,6 +150,8 @@ export class DenoRegistry extends Registry {
             name: moduleInfo.data.name,
             description: moduleInfo.data.description,
             start_count: moduleInfo.data.star_count,
+            moduleRoute: `https://deno.land/x/${moduleName}${version!== versionInfo?.latest ? `@${version}`: ""}`,
+            // importRoute: `https://deno.land/x/${moduleName}${version!== versionInfo?.latest ? `@${version}`: ""}`
         };
         moduleData.invalidVersion = invalidVersion;
 
@@ -159,14 +163,14 @@ export class DenoRegistry extends Registry {
             >(`https://cdn.deno.land/${moduleName}/versions/${version}/meta/meta.json`);
 
             if(metaInfo) {
-                moduleData.info.repository = this.getRepositoryPath(metaInfo.upload_options);
+                moduleData.info.repository = this.getRepositoryPath(metaInfo.upload_options, version !== versionInfo?.latest ? version : undefined);
                 moduleData.uploadedAt = new Date(metaInfo.uploaded_at);
 
                 const readmePath = this.guessReadmePath(metaInfo.directory_listing.filter(dl => dl.type === "file").map(f => f.path));
                 if(readmePath) {
                     moduleData.readmePath = readmePath;
     
-                    const readmeText = await this.fetch<string>(`https://cdn.deno.land/${moduleName}/versions/${version}/raw${readmePath}`, {text: true});
+                    const readmeText = await this.fetch<string>(`https://cdn.deno.land/${moduleName}/versions/${version}/raw${readmePath}`, {text: true, cache: true});
                     moduleData.readmeText = readmeText;
                     moduleData.flags = getFlags(readmeText || "");
                 }
@@ -177,13 +181,13 @@ export class DenoRegistry extends Registry {
         return moduleData;
     }
 
-    private getRepositoryPath(upload_options?: {type: string, repository: string, ref: string}): string | undefined {
+    private getRepositoryPath(upload_options?: {type: string, repository: string, ref: string}, version?: string): string | undefined {
         if(!upload_options) {
             return;
         }
 
         switch(upload_options.type) {
-            case "github": return `https://github.com/${upload_options.repository}`
+            case "github": return `https://github.com/${upload_options.repository}${version ? `/tree/${version}` : ''}`
             default: return `${upload_options.type} - ${upload_options.repository}`;
         }
     }
@@ -269,18 +273,22 @@ export class NestRegistry extends Registry {
             return undefined;
         }
 
+        const latestVersion = moduleInfo.latestVersion?.split("@")[1];
+        version = version ?? (latestVersion || undefined);
+
         const moduleData: Partial<ModuleInfo> = {
             origin: "NEST",
             info: {
                 name: moduleInfo.name,
                 description: moduleInfo.description,
                 versions: moduleInfo.packageUploadNames?.map(pn => pn.split("@")[1]),
-                latestVersion: moduleInfo.latestVersion?.split("@")[1],
-                repository: moduleInfo.repository
+                latestVersion: latestVersion,
+                repository: moduleInfo.repository,
+                // importRoute: `https://x.nest.land/${moduleName}@${version}`,
+                moduleRoute: `https://nest.land/package/${moduleName}`
             }
         };
 
-        version = version ?? (moduleData.info?.latestVersion || undefined);
         const invalidVersion = !!version && !moduleData.info?.versions?.includes(version);
 
         moduleData.invalidVersion = invalidVersion;
@@ -293,9 +301,9 @@ export class NestRegistry extends Registry {
             if(versionInfo) {
                 moduleData.uploadedAt = new Date(versionInfo.package.createdAt);
                 moduleData.readmePath = this.guessReadmePath(Object.keys(versionInfo.files).map(k => versionInfo.files[k].inManifest));
-                
+                // TODO https://nest.land/api/readme?mod=kopo@v0.0.3
                 if(moduleData.readmePath) {
-                    const readmeText = await this.fetch<string>(`https://x.nest.land/${moduleName}@${version}${moduleData.readmePath}`, {text: true});
+                    const readmeText = await this.fetch<string>(`https://x.nest.land/${moduleName}@${version}${moduleData.readmePath}`, {text: true, cache: true});
                     moduleData.readmeText = readmeText;
                     moduleData.flags = getFlags(readmeText || "");
                 }

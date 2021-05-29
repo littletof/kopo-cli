@@ -2,7 +2,7 @@ import { Args, parse } from "https://deno.land/std@0.97.0/flags/mod.ts";
 import {renderMarkdown} from "https://deno.land/x/charmd@v0.0.1/mod.ts";
 import { toEmojiList } from "./flag_parser.ts";
 
-import {DenoRegistry} from "./registries/registry.ts";
+import {DenoRegistry, NestRegistry} from "./registries/registry.ts";
 
 // TODO rename file to cli.ts
 
@@ -20,6 +20,9 @@ import {DenoRegistry} from "./registries/registry.ts";
 //      otherwise, if found in multiple registries give a prompt for the user to select from. but they should be the same...
 // -e --detailed
 //      gives all versions, others from json output + readme by default?!
+// search from an import route
+//      kopo find?? https://deno.land/x/kopo@v0.0.2/parse_flags.ts -> kopo search kopo -e -v v0.0.2
+
 
 // TODO test with module husky
 
@@ -58,9 +61,12 @@ async function search(args: Args) {
                 return;
             }
 
-            console.log(`${module.info?.name} @ ${module.currentVersion}`);
+            console.log(`%c${module.info?.name} %c@ %c${module.currentVersion}`,"color: #ff00ff; font-weight: bold", "", "color: #00ff55");
             console.log(module.info?.description);
-            console.log(`${module.info?.repository}${module.currentVersion !== module.info?.latestVersion ? `/tree/${module.currentVersion}` : ""}`);
+            console.log(`Latest version: ${module.info?.latestVersion}`);
+            console.log(`📍 ${module.info?.repository}`);
+            console.log("📦 " + module.info?.moduleRoute); // 🔗
+            // console.log("📦 " + module.info?.importRoute); // TODO remove, 
             console.log(`Flags: ${toEmojiList(module.flags)}`); // TODO fix
             return;
         }
@@ -69,7 +75,7 @@ async function search(args: Args) {
         if(moduleList.modules.length) {
 
             if(args.readme) {
-                console.log()
+                console.log("readme without -e?!")
             }
 
             if(args.json) {
@@ -86,7 +92,7 @@ async function search(args: Args) {
         }
     } else {
         // TODO UI
-        console.log("TODO Open UI on search page");
+        console.log("%cTODO Open UI on search page", "color: #ff5522");
     }
 }
 

@@ -17,22 +17,21 @@ export function flagToEmoji(flag: string) {
     return FtoEMap[flag];
 }
 
-export function toEmojiList(flags?: {required: {flag: string, description?: string}[], optional: {flag: string, description?: string}[]}) {
+export function toEmojiList(flags?: Flags) {
     return flags ? `${flags.required?.map(f => flagToEmoji(f.flag)).join(" ")}` + (flags.optional.length ? ` (${flags.optional?.map(f => flagToEmoji(f.flag)).join(" ")})` : '') : '-'; // TODO undefined flags
 }
 
-export const enum FlagType {
-    "--unstable",
-    "--allow-net",
-    "--allow-read",
-    "--allow-write",
-    "--allow-hrtime",
-    "--allow-run",
-    "--allow-all",
-    "--allow-env",
-    "--allow-plugin",
-    // TODO location?!
-}
+export type FlagType =
+    "--unstable" 
+    | "--allow-net" 
+    | "--allow-read"
+    | "--allow-write"
+    | "--allow-hrtime"
+    | "--allow-run"
+    | "--allow-all"
+    | "--allow-env"
+    | "--allow-plugin"
+    // | // TODO location?!
 
 export interface Flags {
     required: {flag: FlagType, description?: string}[];
