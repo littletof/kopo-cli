@@ -58,7 +58,8 @@ export class OptionsPage {
                     {name: "Reset to default", value: "reset"},
                     UI.ListOptions.back
                 ],
-                default:  defaultValue !== -1 ? defaultValue.toString() : undefined// get index of default value
+                default:  defaultValue !== -1 ? defaultValue.toString() : undefined, // get index of default value
+                hint: option.help
             });
 
             if(option.valueSet.includes(option.valueSet[+selectedOption])) {

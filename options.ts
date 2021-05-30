@@ -69,7 +69,7 @@ export type OptionType = Extract<keyof typeof KopoOptions, string>;
 
 export const KopoOptions: {[key: string]: {name: string, key:string, help?: string, hidden?: boolean, def?: any, valueTf?: (v: any) => string, valueSet?: any[], onChange?: (nv: any) => Promise<void>}} = {
     "theme": {key: "theme", name: "Theme", valueTf: (v:string) => Theme.getColorForTheme(v)(v), valueSet: Object.keys(Theme.themes), onChange: async v => await Theme.init()},
-    "cls": {key: "cls", name: "Cls on start", valueSet: [true, false], valueTf: v => `${!!+v}`}
+    "cls": {key: "cls", name: "Cls on start", valueSet: [true, false], valueTf: v => `${!!+v}`/*, help: "Clears the console on the start of the UI. Same as a `cls` command."*/}
 }
 
 export class Options {

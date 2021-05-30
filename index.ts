@@ -117,7 +117,7 @@ export class UI {
         console.log(upInCL(1) + " ".repeat(70) + upInCL(1));
     }
 
-    static async selectList(opts: {message: string, options: SelectValueOptions, default?: string}) {
+    static async selectList(opts: {message: string, options: SelectValueOptions, default?: string, hint?: string}) {
         return await Select.prompt({
             message: `${backspace(5)}${opts.message}`,
             options: opts.options.map(opt => (opt as any)['_ui_'] ? opt : UI.selectListOption(opt as any)),
@@ -134,7 +134,7 @@ export class UI {
             },
             default: opts.default,
             maxRows: 20,
-            // hint: "ALMA"
+            hint: opts.hint
         });
     }
 
