@@ -1,9 +1,20 @@
-export class LocalStorageOptions {
-    static isOptionsAvailable() {
+import { Theme, UI } from "./index.ts";
+
+export interface IOptions {
+    isOptionsAvailable(): boolean;
+    getOption<T = any>(key: OptionType, def?: T): Promise<T>;
+    setOption<T>(key: OptionType, value: T): Promise<void>;
+    removeOption(key: OptionType): Promise<void>;
+    getAllSetOptions(): Promise<{key: OptionType, value: Object}[] | []>;
+    clearAllOptions(): Promise<void>;
+}
+
+export class LocalStorageOptions implements IOptions{
+    isOptionsAvailable() {
         return this.hasLocationFlag();
     }
 
-    static hasLocationFlag() {
+    hasLocationFlag() {
         try {
             const a = location.href;
             return true;
@@ -12,7 +23,7 @@ export class LocalStorageOptions {
         }
     }
 
-    static async getOption<T = any>(key: string, def?: T) {
+    async getOption<T = any>(key: OptionType, def?: T) {
         if(!this.isOptionsAvailable()) {
             return def;
         }
@@ -21,7 +32,7 @@ export class LocalStorageOptions {
         return value ? JSON.parse(value) : def;
     }
 
-    static async setOption<T>(key: string, value: T) {
+    async setOption<T>(key: OptionType, value: T) {
         if(!this.isOptionsAvailable()) {
             return;
         }
@@ -29,7 +40,7 @@ export class LocalStorageOptions {
         localStorage.setItem(key, JSON.stringify(value));
     }
 
-    static async removeOption(key: string) {
+    async removeOption(key: OptionType) {
         if(!this.isOptionsAvailable()) {
             return;
         }
@@ -37,40 +48,46 @@ export class LocalStorageOptions {
         localStorage.removeItem(key);
     }
 
-    static async getAllSetOptions() {
+    async getAllSetOptions() {
         if(!this.isOptionsAvailable()) {
             return [];
         }
 
-        return new Array(localStorage.length).fill(0).map((_, i) => localStorage.key(i)!).map(k => ({key: k, value: localStorage.getItem(k)}));
+        return new Array(localStorage.length).fill(0).map((_, i) => localStorage.key(i)!).map(k => ({key: k, value: this.getOption(k)}));
     }
 
-    static async clearAllOptions() {
+    async clearAllOptions() {
         if(!this.isOptionsAvailable()) {
-            return [];
+            return;
         }
 
         localStorage.clear();
     }
 }
 
-export class Options {
-    static optionsStrategy = LocalStorageOptions;
+export type OptionType = Extract<keyof typeof KopoOptions, string>;
 
+export const KopoOptions: {[key: string]: {name: string, key:string, help?: string, hidden?: boolean, def?: any, valueTf?: (v: any) => string}} = {
+    "theme": {key: "theme", name: "Theme", valueTf: (v:string) => Theme.getColorForTheme(v)(v)},
+    "cls": {key: "cls", name: "Cls on start"}
+}
+
+export class Options {
+    static optionsStrategy = new LocalStorageOptions();
 
     static isOptionsAvailable() {
         return this.optionsStrategy.isOptionsAvailable();
     }
 
-    static async getOption<T = any>(key: string, def?: T) {
+    static async getOption<T = any>(key: OptionType, def?: T) {
         return await this.optionsStrategy.getOption(key, def);
     }
 
-    static async setOption<T>(key: string, value: T) {
+    static async setOption<T>(key: OptionType, value: T) {
         await this.optionsStrategy.setOption(key, value);
     }
 
-    static async removeOption(key: string) {
+    static async removeOption(key: OptionType) {
         await this.optionsStrategy.removeOption(key);
     }
 

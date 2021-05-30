@@ -3,10 +3,10 @@ import {renderMarkdown} from "https://deno.land/x/charmd@v0.0.1/mod.ts";
 import { Select } from "https://deno.land/x/cliffy@v0.19.0/prompt/select.ts";
 import type {SelectValueOptions} from "https://deno.land/x/cliffy@v0.19.0/prompt/select.ts";
 import { toEmojiList } from "./flag_parser.ts";
-import {LocalStorageOptions, Options} from "./options.ts";
+import {KopoOptions, LocalStorageOptions, Options} from "./options.ts";
 
 import {DenoRegistry, NestRegistry} from "./registries/registry.ts";
-import { backspace } from "./utils.ts";
+import { backspace, upInCL } from "./utils.ts";
 import { Input } from "https://deno.land/x/cliffy@v0.19.0/prompt/input.ts";
 
 import  * as colors from 'https://deno.land/std@0.97.0/fmt/colors.ts';
@@ -33,6 +33,8 @@ import {random} from './utils.ts';
 
 
 // TODO test with module husky
+
+// deno run --allow-net --no-check --unstable --location https://kopo.land index.ts ui
 
 async function search(args: Args) {
 
@@ -114,6 +116,7 @@ export class UI {
             // searchIcon: '?*',
             // searchLabel: 'Search',
             // transform: value => value+'!!', // selected value transform
+            // transform: value => '',
             pointer: '>>', // after selected
             keys: {
                 previous: ['w', '8', 'up'],
@@ -163,14 +166,18 @@ export class Theme {
     static accent = (str: string) => str;
 
     static async init() {
-        this.setThemeColors(await Options.getOption("accent", "yellow"));
+        this.setThemeColors(await Options.getOption(KopoOptions.theme.key, "yellow"));
     }
 
     static setThemeColors(theme: string) {
+        this.accent = this.getColorForTheme(theme);
+    }
+
+    static getColorForTheme(theme: string) {
         if(theme === "random") {
-            this.accent = this.themes[random(Object.keys(this.themes))[0]];
+            return this.themes[random(Object.keys(this.themes))[0]];
         } else {
-            this.accent = this.themes[theme] || colors.yellow;
+            return this.themes[theme] || colors.yellow;
         }
     }
 }
@@ -190,33 +197,53 @@ async function ui(args: Args) {
     });
 
     if(option === "options") {
+        // console.log('\x1Bc');
+        console.log(upInCL(1) + " ".repeat(50) + upInCL(1));
+
+        const options = await Promise.all(Object.keys(KopoOptions).map(async k => {
+
+            let setValue = await Options.getOption(k, KopoOptions[k].def ? KopoOptions[k].def : "default");
+            if(KopoOptions[k].valueTf) {
+                setValue = KopoOptions[k].valueTf!(setValue);
+            }
+            
+            return ({
+                name: `${`${KopoOptions[k].name}:`.padEnd(20)} ${setValue}`,
+                value: k
+            })
+        }));
+
         const option = await UI.selectList({
             message: "KOPO CLI - Options", 
             options: [
-                {name: `theme: ${await Options.getOption("accent", "yellow (Default)")}`, value: "theme"},
+                ...options,
                 {name: "list set options", value: "all"},
                 "clear"
             ],
             // default: "exit"
         });
-        if(option === "theme") {
+        if(option === KopoOptions.theme.key) {
+            console.log(upInCL(1) + " ".repeat(50) + upInCL(1));
             const option = await UI.selectList({
                 message: "KOPO CLI - Theme", 
                 options: [
                     ...Object.keys(Theme.themes).map(k => ({name: Theme.themes[k](k), value: k})),
-                    {disabled: true, name: "--------------", value: "back"},
+                    {disabled: true, name: "--------------", value: "sep"},
                     "reset",
                     "back"
                 ],
-                default: await Options.getOption("accent", "yellow")
+                default: await Options.getOption(KopoOptions.theme.key, "yellow")
             });
             if(option === "reset") {
-                await Options.removeOption("accent");
+                await Options.removeOption(KopoOptions.theme.key);
                 return;
             }
             if(option !== "back") {
-                await Options.setOption("accent", option);
+                await Options.setOption(KopoOptions.theme.key, option);
             }
+        }
+        if(option === KopoOptions.cls.key) {
+            await Options.setOption(KopoOptions.cls.key, !await Options.getOption(KopoOptions.cls.key, false))
         }
         if(option === "all") {
             console.log(await Options.getAllSetOptions());
@@ -244,7 +271,12 @@ if(parsedArgs._?.length) {
             await search(parsedArgs);
             break;
         case "ui":
-            // await Options.setOption("accent", "random");
+            if(await Options.getOption(KopoOptions.cls.key, false)) {
+                console.log('\x1Bc');
+            }
+
+            console.log(); // so upInCL+clear doesnt jump
+            // await Options.setOption(KopoOptions.theme.key, "random");
             await Theme.init();
             await ui(parsedArgs);
             break;
