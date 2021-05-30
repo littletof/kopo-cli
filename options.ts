@@ -1,4 +1,4 @@
-import { Theme, UI } from "./index.ts";
+import { Theme } from "./theme.ts";
 
 export interface IOptions {
     isOptionsAvailable(): boolean;
@@ -53,7 +53,7 @@ export class LocalStorageOptions implements IOptions{
             return [];
         }
 
-        return new Array(localStorage.length).fill(0).map((_, i) => localStorage.key(i)!).map(k => ({key: k, value: this.getOption(k)}));
+        return await Promise.all(new Array(localStorage.length).fill(0).map((_, i) => localStorage.key(i)!).map(async k => ({key: k, value: await this.getOption(k)})));
     }
 
     async clearAllOptions() {
@@ -67,9 +67,9 @@ export class LocalStorageOptions implements IOptions{
 
 export type OptionType = Extract<keyof typeof KopoOptions, string>;
 
-export const KopoOptions: {[key: string]: {name: string, key:string, help?: string, hidden?: boolean, def?: any, valueTf?: (v: any) => string}} = {
-    "theme": {key: "theme", name: "Theme", valueTf: (v:string) => Theme.getColorForTheme(v)(v)},
-    "cls": {key: "cls", name: "Cls on start"}
+export const KopoOptions: {[key: string]: {name: string, key:string, help?: string, hidden?: boolean, def?: any, valueTf?: (v: any) => string, valueSet?: any[], onChange?: (nv: any) => Promise<void>}} = {
+    "theme": {key: "theme", name: "Theme", valueTf: (v:string) => Theme.getColorForTheme(v)(v), valueSet: Object.keys(Theme.themes), onChange: async v => await Theme.init()},
+    "cls": {key: "cls", name: "Cls on start", valueSet: [true, false], valueTf: v => `${!!+v}`}
 }
 
 export class Options {
