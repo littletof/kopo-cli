@@ -1,8 +1,16 @@
 import { Args, parse } from "https://deno.land/std@0.97.0/flags/mod.ts";
 import {renderMarkdown} from "https://deno.land/x/charmd@v0.0.1/mod.ts";
+import { Select } from "https://deno.land/x/cliffy@v0.19.0/prompt/select.ts";
+import type {SelectValueOptions} from "https://deno.land/x/cliffy@v0.19.0/prompt/select.ts";
 import { toEmojiList } from "./flag_parser.ts";
+import {LocalStorageOptions, Options} from "./options.ts";
 
 import {DenoRegistry, NestRegistry} from "./registries/registry.ts";
+import { backspace } from "./utils.ts";
+import { Input } from "https://deno.land/x/cliffy@v0.19.0/prompt/input.ts";
+
+import  * as colors from 'https://deno.land/std@0.97.0/fmt/colors.ts';
+import {random} from './utils.ts';
 
 // TODO rename file to cli.ts
 
@@ -96,6 +104,133 @@ async function search(args: Args) {
     }
 }
 
+export class UI {
+    static async selectList(opts: {message: string, options: SelectValueOptions, default?: string}) {
+        return await Select.prompt({
+            message: `${backspace(5)}${opts.message}`,
+            options: opts.options.map(opt => (opt as any)['_ui_'] ? opt : UI.selectListOption(opt as any)),
+            listPointer: `${Theme.accent('>>')}\x1b[1m`,
+            // search: true,
+            // searchIcon: '?*',
+            // searchLabel: 'Search',
+            // transform: value => value+'!!', // selected value transform
+            pointer: '>>', // after selected
+            keys: {
+                previous: ['w', '8', 'up'],
+                next: ['s', '2', 'down'],
+            },
+            default: opts.default,
+            maxRows: 20,
+            // hint: "ALMA"
+        });
+    }
+
+    static selectListOption(opts: string | {name: string, value?: string, disabled?: boolean, disabledName?: string}) {
+        if(typeof opts === 'string') {
+            opts = {name: opts};
+        }
+        return {
+            name: (opts.disabled ? `${colors.gray(opts.disabledName ?? opts.name)}` : opts.name) + "\x1b[39m\x1b[0m",
+            value: opts.value ?? opts.name,
+            disabled: opts.disabled,
+            _ui_: true
+        }
+    }
+
+    /* static async input(opts: {message: string, suggestions?: string[] | Promise<string[]>}) {
+        return await Input.prompt({
+            message: `${backspace(5)}${opts.message}`,
+            suggestions: await opts.suggestions,
+            pointer: ">>",
+            keys: {complete: ["d", "right"]}
+        });
+    } */
+}
+
+export class Theme {
+    static themes: {[key: string]: (str: string) => string} = {
+        "blue": colors.blue,
+        "cyan": colors.cyan,
+        "gray": colors.gray,
+        "green": colors.green,
+        "magenta": colors.magenta,
+        "red": colors.red,
+        "yellow": colors.yellow,
+        "white": colors.white,
+        "random": a => a
+    };
+
+    static accent = (str: string) => str;
+
+    static async init() {
+        this.setThemeColors(await Options.getOption("accent", "yellow"));
+    }
+
+    static setThemeColors(theme: string) {
+        if(theme === "random") {
+            this.accent = this.themes[random(Object.keys(this.themes))[0]];
+        } else {
+            this.accent = this.themes[theme] || colors.yellow;
+        }
+    }
+}
+
+async function ui(args: Args) {
+    const option = await UI.selectList({
+        message: "KOPO CLI", 
+        options: [
+            "browse",
+            "search",
+            "registries",
+            UI.selectListOption({name: "options", disabled: !Options.isOptionsAvailable(), disabledName: "options (no localStorage)"}),
+            "help",
+            "exit"
+        ],
+        // default: "exit"
+    });
+
+    if(option === "options") {
+        const option = await UI.selectList({
+            message: "KOPO CLI - Options", 
+            options: [
+                {name: `theme: ${await Options.getOption("accent", "yellow (Default)")}`, value: "theme"},
+                {name: "list set options", value: "all"},
+                "clear"
+            ],
+            // default: "exit"
+        });
+        if(option === "theme") {
+            const option = await UI.selectList({
+                message: "KOPO CLI - Theme", 
+                options: [
+                    ...Object.keys(Theme.themes).map(k => ({name: Theme.themes[k](k), value: k})),
+                    {disabled: true, name: "--------------", value: "back"},
+                    "reset",
+                    "back"
+                ],
+                default: await Options.getOption("accent", "yellow")
+            });
+            if(option === "reset") {
+                await Options.removeOption("accent");
+                return;
+            }
+            if(option !== "back") {
+                await Options.setOption("accent", option);
+            }
+        }
+        if(option === "all") {
+            console.log(await Options.getAllSetOptions());
+        }
+        if(option === "clear") {
+            await Options.clearAllOptions();
+            console.log("Cleared");
+        }
+        // console.log(await Options.getAllSetOptions());
+    }
+
+    // await UI.input({message: "Search", suggestions: new DenoRegistry().getAllModuleNames()});
+}
+
 const parsedArgs = parse(Deno.args, {
     boolean: ['json', 'readme', 'readme-raw', 'exact'], 
     alias: {e: "exact", v: "version", r: 'readme', w: "readme-raw"}
@@ -107,6 +242,11 @@ if(parsedArgs._?.length) {
     switch(cmd) {
         case "search":
             await search(parsedArgs);
+            break;
+        case "ui":
+            // await Options.setOption("accent", "random");
+            await Theme.init();
+            await ui(parsedArgs);
             break;
     }
 }
