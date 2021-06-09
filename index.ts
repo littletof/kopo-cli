@@ -1,18 +1,12 @@
 import { Args, parse } from "https://deno.land/std@0.97.0/flags/mod.ts";
 import {renderMarkdown} from "https://deno.land/x/charmd@v0.0.1/mod.ts";
-import { Select } from "https://deno.land/x/cliffy@v0.19.0/prompt/select.ts";
-import type {SelectValueOptions} from "https://deno.land/x/cliffy@v0.19.0/prompt/select.ts";
 import { toEmojiList } from "./flag_parser.ts";
-import {KopoOptions, LocalStorageOptions, Options} from "./options.ts";
+import {KopoOptions, Settings} from "./settings.ts";
 
 import {DenoRegistry, NestRegistry} from "./registries/registry.ts";
-import { backspace, upInCL } from "./utils.ts";
-import { Input } from "https://deno.land/x/cliffy@v0.19.0/prompt/input.ts";
 
-import  * as colors from 'https://deno.land/std@0.97.0/fmt/colors.ts';
-import {random} from './utils.ts';
-import { OptionsPage } from "./pages/options_page.ts";
 import { Theme } from "./theme.ts";
+import { HomePage } from "./pages/home_page.ts";
 
 // TODO rename file to cli.ts
 
@@ -108,80 +102,6 @@ async function search(args: Args) {
     }
 }
 
-export class UI {
-    static ListOptions = {
-        back: {name: "Back", value: "kopo_back"}
-    }
-
-    static clearLine() {
-        console.log(upInCL(1) + " ".repeat(70) + upInCL(1));
-    }
-
-    static async selectList(opts: {message: string, options: SelectValueOptions, default?: string, hint?: string}) {
-        return await Select.prompt({
-            message: `${backspace(5)}${opts.message}`,
-            options: opts.options.map(opt => (opt as any)['_ui_'] ? opt : UI.selectListOption(opt as any)),
-            listPointer: `${Theme.accent('>>')}\x1b[1m`,
-            // search: true,
-            // searchIcon: '?*',
-            // searchLabel: 'Search',
-            // transform: value => value+'!!', // selected value transform
-            // transform: value => '',
-            pointer: '>>', // after selected
-            keys: {
-                previous: ['w', '8', 'up'],
-                next: ['s', '2', 'down'],
-            },
-            default: opts.default,
-            maxRows: 20,
-            hint: opts.hint
-        });
-    }
-
-    static selectListOption(opts: string | {name: string, value?: string, disabled?: boolean, disabledName?: string}) {
-        if(typeof opts === 'string') {
-            opts = {name: opts};
-        }
-        return {
-            name: (opts.disabled ? `${colors.gray(opts.disabledName ?? opts.name)}` : opts.name) + "\x1b[39m\x1b[0m",
-            value: opts.value ?? opts.name,
-            disabled: opts.disabled,
-            _ui_: true
-        }
-    }
-
-    /* static async input(opts: {message: string, suggestions?: string[] | Promise<string[]>}) {
-        return await Input.prompt({
-            message: `${backspace(5)}${opts.message}`,
-            suggestions: await opts.suggestions,
-            pointer: ">>",
-            keys: {complete: ["d", "right"]}
-        });
-    } */
-}
-
-async function ui(args: Args) {
-    const option = await UI.selectList({
-        message: "KOPO CLI", 
-        options: [
-            "browse",
-            "search",
-            "registries",
-            UI.selectListOption({name: "options", disabled: !Options.isOptionsAvailable(), disabledName: "options (no localStorage)"}),
-            "help",
-            "exit"
-        ],
-        // default: "exit"
-    });
-
-    if(option === "options") {
-        UI.clearLine()
-        await OptionsPage.show();
-    }
-
-    // await UI.input({message: "Search", suggestions: new DenoRegistry().getAllModuleNames()});
-}
-
 const parsedArgs = parse(Deno.args, {
     boolean: ['json', 'readme', 'readme-raw', 'exact'], 
     alias: {e: "exact", v: "version", r: 'readme', w: "readme-raw"}
@@ -195,14 +115,14 @@ if(parsedArgs._?.length) {
             await search(parsedArgs);
             break;
         case "ui":
-            if(await Options.getOption(KopoOptions.cls.key, false)) {
-                console.log('\x1Bc');
+            if(await Settings.getKopoOption(KopoOptions.cls)) {
+                console.log('\x1Bc'); // cls
             }
 
             console.log(); // so upInCL+clear doesnt jump
-            // await Options.setOption(KopoOptions.theme.key, "random");
+            // await Settings.setOption(KopoOptions.theme.key, "random");
             await Theme.init();
-            await ui(parsedArgs);
+            await HomePage.show(parsedArgs);
             break;
     }
 }

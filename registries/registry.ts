@@ -40,6 +40,7 @@ export interface ModuleInfo {
 export abstract class Registry {
     static cache = new Map<string, unknown>();
 
+    abstract getRegistryInfo(): {name: string, key: string, icon?: string, description?: string, url?: string};
     abstract getWellKnownPath(): string;
 
     abstract getModulesList(query?: string, page?: number, pageSize?: number): Promise<ModulesListPage>;
@@ -83,8 +84,20 @@ export interface DenoModuleListDataType {
     results: {name: string, description?: string, star_count?: number, search_score?: number}[]
 }
 export class DenoRegistry extends Registry {
+    static key = 'deno';
+
     getWellKnownPath() {
         return "https://deno.land/.well-known/deno-import-intellisense.json";
+    }
+
+    getRegistryInfo() {
+        return {
+            key: DenoRegistry.key,
+            name: 'deno.land/x',
+            icon: '🦕',
+            url: 'https://deno.land/x',
+            description: '`deno.land/x` is a hosting service for Deno scripts.\nIt caches releases of open source modules stored on `GitHub` and serves them at one easy to remember domain.'
+        }
     }
 
     async getAllModuleNames() {
@@ -223,8 +236,20 @@ export interface NestModuleVersionInfo {
     files: {[key: string]: {inManifest: string, txId: string}};
 }
 export class NestRegistry extends Registry {
+    static key = 'nest';
+
     getWellKnownPath() {
         return "https://intellisense.nest.land/deno-import-intellisense.json";
+    }
+
+    getRegistryInfo() {
+        return {
+            key: NestRegistry.key,
+            name: 'x.nest.land',
+            icon: '🥚',
+            url: 'https://nest.land',
+            description: `Nest.land combines \`Deno\` with the \`Arweave\`.\nHere you can publish your Deno modules to the permaweb, where they can never be deleted.\nThis avoids a major pitfall for web-based module imports while allowing developers to leverage Deno's import design!`
+        }
     }
 
     async getAllModuleNames() {

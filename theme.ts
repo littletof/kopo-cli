@@ -1,8 +1,11 @@
 import { colors } from "./deps.ts";
-import { KopoOptions, Options } from "./options.ts";
+import { KopoOptions, Settings } from "./settings.ts";
 import { random } from "./utils.ts";
 
 export class Theme {
+
+    static colors = colors;
+
     static themes: {[key: string]: (str: string) => string} = {
         "blue": colors.blue,
         "cyan": colors.cyan,
@@ -18,7 +21,7 @@ export class Theme {
     static accent = (str: string) => str;
 
     static async init() {
-        this.setThemeColors(await Options.getOption(KopoOptions.theme.key, "yellow"));
+        this.setThemeColors(await Settings.getKopoOption(KopoOptions.theme));
     }
 
     static setThemeColors(theme: string) {
