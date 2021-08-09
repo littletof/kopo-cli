@@ -3,6 +3,7 @@ import { UI } from "../ui.ts";
 import { Settings } from "../settings.ts";
 import { OptionsPage } from "./settings_page.ts";
 import { RegistriesPage } from "./registries_page.ts";
+import { BrowsePage } from "./browse_page.ts";
 
 export class HomePage {
     static async show(args: Args, options?: {}) {
@@ -18,15 +19,20 @@ export class HomePage {
             ],
             // default: "exit"
         });
-    
-        if(option === "settings") {
-            UI.clearLine();
-            await OptionsPage.show(args);
-        }
 
+        if(option === 'browse') {
+            UI.clearLine();
+            await BrowsePage.show(args);
+        }
+    
         if(option === 'registries') {
             UI.clearLine();
             await RegistriesPage.show(args);
+        }
+
+        if(option === "settings") {
+            UI.clearLine();
+            await OptionsPage.show(args);
         }
     
         /* if(option === "search") {

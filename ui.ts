@@ -7,11 +7,16 @@ import { backspace, upInCL } from "./utils.ts";
 export class UI {
     static listOptions = {
         back: UI.selectListOption({name: "Back", value: "kopo_back"}),
-        separator: UI.selectListOption({name: "-".repeat(30), value: "kopo_separator", disabled: true})
+        separator: UI.selectListOption({name: "-".repeat(30), value: "kopo_separator", disabled: true}),
+        empty: UI.selectListOption({name: " ", value: "kopo_empty", disabled: true})
     }
 
     static clearLine() {
         console.log(upInCL(1) + " ".repeat(70) + upInCL(1));
+    }
+
+    static upInCL(lines?: number) {
+        console.log(upInCL(lines));
     }
 
     static async selectList(opts: {message: string, options: SelectValueOptions, default?: string, hint?: string}) {
@@ -31,7 +36,7 @@ export class UI {
             },
             default: opts.default,
             maxRows: 20,
-            hint: opts.hint
+            hint: opts.hint,
         });
     }
 

@@ -44,7 +44,7 @@ export abstract class Registry {
     abstract getWellKnownPath(): string;
 
     abstract getModulesList(query?: string, page?: number, pageSize?: number): Promise<ModulesListPage>;
-    abstract getModuleInfo(moduleName: string): Promise<ModuleInfo | undefined>;
+    abstract getModuleInfo(moduleName: string, version?: string): Promise<ModuleInfo | undefined>;
 
     abstract getAllModuleNames(): Promise<string[]>;
     abstract getVersionsOfModule(moduleName: string, version?: string): Promise<string[]>;

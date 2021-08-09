@@ -69,8 +69,10 @@ export interface OptionConf {
     name: string;
     key:string;
     help?: string;
+    /** To hide in settings page  */
     hidden?: boolean;
     def?: any;
+    /** value transformer  */
     valueTf?: (v: any) => string;
     valueSet?: any[];
     onChange?: (nv: any) => Promise<void>;
@@ -87,7 +89,7 @@ export const KopoOptions: {[key: string]: OptionConf} = {
     "cls": booleanOption({key: "cls", name: "Cls on start", def: false, help: "When set to `true`, the console is cleared on start.\nSame as a `cls` command."}),
     "raw-readme": booleanOption({key: "raw-readme", name: "Print raw readme", def: false}),
 
-    "registries": {key: "registires", name: "Registries", hidden: true, def: {deno: true, nest: true}}
+    "registries": {key: "registires", name: "Registries", hidden: true, def: {}}
 }
 
 export class Settings {
