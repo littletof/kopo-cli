@@ -87,7 +87,7 @@ export function booleanOption(options: OptionConf & {valueSet?: never, valueTf?:
 export const KopoOptions: {[key: string]: OptionConf} = {
     "theme": {key: "theme", name: "Theme", def: "yellow", valueTf: (v:string) => Theme.getColorForTheme(v)(v), valueSet: Object.keys(Theme.themes), onChange: async v => await Theme.init()},
     "cls": booleanOption({key: "cls", name: "Cls on start", def: false, help: "When set to `true`, the console is cleared on start.\nSame as a `cls` command."}),
-    "raw-readme": booleanOption({key: "raw-readme", name: "Print raw readme", def: false}),
+    "rawreadme": booleanOption({key: "rawreadme", name: "Print raw readme", def: false}),
 
     "registries": {key: "registires", name: "Registries", hidden: true, def: {}}
 }

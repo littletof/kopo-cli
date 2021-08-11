@@ -9,11 +9,16 @@ import { upInCL } from "../utils.ts";
 export class RegistriesPage {
     static async show(args: Args, options?: {}): Promise<void> {
 
+        const registriesSettings = await Settings.getKopoOption(KopoOptions.registries);
+
         const registriesOptions = RegistryHandler.getAllRegistries().map(r => {
             const reg = r.getRegistryInfo();
            
             /* ${reg.icon || '🗂🧮'}  */
-            return UI.selectListOption({name: `${reg.name}`, value: reg.key}); // TODO (disabled) in name
+            return UI.selectListOption({
+                name: `${reg.name}${registriesSettings?.[reg.key] === false ? Theme.colors.gray(' (disabled)'):''}`,
+                value: reg.key
+            });
         });
 
         const selectedOption = await UI.selectList({
@@ -38,7 +43,6 @@ export class RegistriesPage {
         console.log();
         UI.clearLine();
 
-        const registriesSettings = await Settings.getKopoOption(KopoOptions.registries);
         const disabled = registriesSettings?.[selectedOption] === false;
 
         const registryOptions = {

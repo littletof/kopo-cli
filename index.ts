@@ -7,6 +7,7 @@ import {DenoRegistry, NestRegistry} from "./registries/registry.ts";
 
 import { Theme } from "./theme.ts";
 import { HomePage } from "./pages/home_page.ts";
+import { UI } from "./ui.ts";
 
 // TODO rename file to cli.ts
 
@@ -116,7 +117,7 @@ if(parsedArgs._?.length) {
             break;
         case "ui":
             if(await Settings.getKopoOption(KopoOptions.cls)) {
-                console.log('\x1Bc'); // cls
+                UI.cls();
             }
 
             console.log(); // so upInCL+clear doesnt jump

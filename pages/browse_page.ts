@@ -64,7 +64,9 @@ export class BrowsePage {
         }
 
         if(selected.startsWith('kopomodule#')) {
-            await ModulePage.show(args, {module: selected.split('#')[1], registry});
+            UI.upInCL(2);
+            UI.clearLine();
+            await ModulePage.show(args, {module: selected.split('#')[1], registry, showTitle: true});
             options.last = selected;
             return await BrowsePage.showBrowsePage(registry, args, options);
         }

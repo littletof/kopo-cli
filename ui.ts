@@ -19,7 +19,11 @@ export class UI {
         console.log(upInCL(lines));
     }
 
-    static async selectList(opts: {message: string, options: SelectValueOptions, default?: string, hint?: string}) {
+    static cls() {
+        console.log('\x1Bc');
+    }
+
+    static async selectList(opts: {message: string, options: SelectValueOptions, default?: string, hint?: string, maxRows?: number}) {
         return await Select.prompt({
             message: `${backspace(5)}${opts.message}`,
             options: opts.options.map(opt => (opt as any)['_ui_'] ? opt : UI.selectListOption(opt as any)),
@@ -33,9 +37,10 @@ export class UI {
             keys: {
                 previous: ['w', '8', 'up'],
                 next: ['s', '2', 'down'],
+                nextPage: ['n'], previousPage: ['p']
             },
             default: opts.default,
-            maxRows: 20,
+            maxRows: opts.maxRows ??  20,
             hint: opts.hint,
         });
     }
