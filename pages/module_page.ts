@@ -7,11 +7,13 @@ import { RegistryHandler } from "../registries/registry_handler.ts";
 import { Settings } from "../settings.ts";
 import { Theme } from "../theme.ts";
 import { UI } from "../ui.ts";
+import { SearchPage } from "./search_page.ts";
 
 export class ModulePage {
     static async show(args: Args, options: {module: string, registry: Registry, version?: string, showTitle?: boolean}): Promise<void> {
         if(options.showTitle) {
-            const title = renderMarkdown(`**KOPO CLI - Module - ${options.module}${options.version ? ` @ ${options.version}` : ''}**`);
+            const regInfo = options.registry.getRegistryInfo();
+            const title = renderMarkdown(`**KOPO CLI - ${regInfo.icon ? regInfo.icon + " ":""}${regInfo.name} - Module - ${Theme.accent(options.module)}${options.version ? ` @ ${options.version}` : ''}**`);
             console.log(title);
         }
         const module = await options.registry.getModuleInfo(options.module, options.version);
@@ -53,7 +55,7 @@ export class ModulePage {
         UI.upInCL(lines+3);
 
         if(UI.listOptions.back.is(selected)) {
-            UI.clearLine();
+            UI.cls();
             return;
         }
 
@@ -68,8 +70,9 @@ export class ModulePage {
 
         if(moduleOptionsCandidates.diff_version.is(selected)) {
             // options.registry.getVersionsOfModule()
-            const version = await UI.selectList({
-                message: 'select version',
+            UI.cls();
+            const version = await UI.selectList({ // TODO allow search???
+                message: `KOPO CLI - Module - ${options.module} - Select version`,
                 options: [
                     UI.listOptions.back,
                     UI.listOptions.separator,
@@ -90,12 +93,12 @@ export class ModulePage {
             const newVersion: any = {};
             Object.assign(newVersion, options, {version});
             
-            UI.clearLine();
+            UI.cls();
             return await this.show(args, newVersion);
         }
 
         if(moduleOptionsCandidates.other_registries.is(selected)) {
-            const others = (await Promise.all((await RegistryHandler.getRegistries()).map(async reg => {
+            /* const others = (await Promise.all((await RegistryHandler.getRegistries()).map(async reg => {
                 const moduleSearch = await reg.getModuleInfo(module.info?.name!);
                 if(!moduleSearch) {
                     return undefined;
@@ -104,13 +107,17 @@ export class ModulePage {
             }))).filter(res => !!res).map(res => `${res!.reg} - ${res!.result}`);
             console.log(others.join('\n'));
 
-            // TODO SHOW searchPage
+            // TODO SHOW searchPage */
+            UI.cls();
+            await SearchPage.showSearchResult(args, {searchTerm: module.info?.name!, exact: true});
+            UI.cls();
+            return await this.show(args, options);
         }
     }
 
     static async renderModuleInfo(module: ModuleInfo) {
         const latest = module.info?.latestVersion === module.currentVersion;
-        console.log(`${Theme.accent(module.info?.name!)} @ ${module.currentVersion}${latest ? Theme.colors.gray(' (latest)') : ''}`);
+        console.log(Theme.colors.bold(`${Theme.accent(module.info?.name!)} @ ${module.currentVersion}${latest ? Theme.colors.gray(' (latest)') : ''}`));
         let lines = 1;
 
         const description = renderMarkdown(">"+module.info?.description);

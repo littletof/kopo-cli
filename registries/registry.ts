@@ -126,6 +126,10 @@ export class DenoRegistry extends Registry {
             return {modules: [], page, pageSize, totalModules: 0, totalPages: 0, query};
         }
 
+        if(query) {
+            response.data.total_count = response.data.results.length;
+        }
+
         return {
             modules: (response.data.results || []).map(d => ({name: d.name, description: d.description, starCount: d.star_count})),
             query,
@@ -271,23 +275,25 @@ export class NestRegistry extends Registry {
     }
 
     async getModulesList(query?: string, page: number=1, pageSize: number = 20) {
-        const response = await this.fetch<NestModuleInfo[]>(`https://x.nest.land/api/packages`, {cache: true});
+        const allNestModules = await this.fetch<NestModuleInfo[]>(`https://x.nest.land/api/packages`, {cache: true});
 
-        if(!response) {
+        if(!allNestModules) {
             return {modules: [], page, pageSize, totalModules: 0, totalPages: 0, query};
         }
 
-        const filteredModules = query ? response.filter(m => m.name?.includes(query) || m.description?.includes(query))
-                                        : response;
+        const filteredModules = query ? allNestModules.filter(m => m.name?.includes(query) || m.description?.includes(query))
+                                        : allNestModules;
         const modulesOnPage = paginateArray(filteredModules, page, pageSize);
+
+        const count = query ? modulesOnPage.length : allNestModules.length;
 
         return {
             modules: (modulesOnPage || []).map(d => ({name: d.name, description: d.description, owner: d.owner})),
             query,
             page,
             pageSize,
-            totalModules: response.length,
-            totalPages: Math.ceil(response.length/pageSize),
+            totalModules: count,
+            totalPages: Math.ceil(count/pageSize),
         };
     }
     async getModuleInfo(moduleName: string, version?: string) {

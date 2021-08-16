@@ -8,7 +8,8 @@ export class UI {
     static listOptions = {
         back: UI.selectListOption({name: "Back", value: "kopo_back"}),
         separator: UI.selectListOption({name: "-".repeat(30), value: "kopo_separator", disabled: true}),
-        empty: UI.selectListOption({name: " ", value: "kopo_empty", disabled: true})
+        empty: UI.selectListOption({name: " ", value: "kopo_empty", disabled: true}),
+        disabled:  (name: string) => UI.selectListOption({name, value: "kopo_disabled", disabled: true}),
     }
 
     static clearLine() {

@@ -5,6 +5,7 @@ import { RegistryHandler } from "../registries/registry_handler.ts";
 import { Theme } from "../theme.ts";
 import { UI } from "../ui.ts";
 import { ModulePage } from "./module_page.ts";
+import { SearchPage } from "./search_page.ts";
 
 export class BrowsePage {
     static async show(args: Args, options?: {}) {
@@ -16,23 +17,24 @@ export class BrowsePage {
         return await this.showBrowsePage(registry, args, options);
     }
 
-    static async showBrowsePage(registry: Registry, args: Args, options?: {page?: number, last?: string}): Promise<void> {
+    static async showBrowsePage(registry: Registry, args: Args, options?: {page?: number, last?: string, query?: string}): Promise<void> {
         const info = registry.getRegistryInfo();
-        const title = renderMarkdown(`**KOPO CLI - Browsing - ${info.icon ? info.icon + " ":""}${info.name}**`);
+        const title = renderMarkdown(`**KOPO CLI - ${options?.query ? 'Searching' : 'Browsing'} - ${info.icon ? info.icon + " ":""}${info.name}${options?.query? ` - ${Theme.accent(options.query)}` : ''}**`);
         console.log(title);
 
         UI.clearLine();
 
         options = Object.assign({page: 1}, options); // default options
 
-        const moduleList = await registry.getModulesList(undefined, options.page, 10); // TODO pageSize to Settings
+        const moduleList = await registry.getModulesList(options.query, options.page, 10); // TODO pageSize to Settings
         const separatorWithInfo = Object.assign({}, UI.listOptions.separator, {name: `------ ${moduleList.page}/${moduleList.totalPages} (${moduleList.totalModules}) ------`})
 
         UI.upInCL(1);
 
         const browseOptions = {
-            next: UI.selectListOption({name: 'Next page', value:'kopo_next', disabled: moduleList.page === moduleList.totalPages}),
-            prev: UI.selectListOption({name: 'Previous page', value:'kopo_prev', disabled: moduleList.page === 1})
+            search: UI.selectListOption({name: 'Search', value:'kopo_search'}),
+            next: UI.selectListOption({name: 'Next page', value:'kopo_next', disabled: moduleList.totalPages === 0 || moduleList.page === moduleList.totalPages}),
+            prev: UI.selectListOption({name: 'Previous page', value:'kopo_prev', disabled: moduleList.totalPages === 0 || moduleList.page === 1})
         }
 
         const selected = await UI.selectList({
@@ -42,15 +44,24 @@ export class BrowsePage {
                     name: `${m.name.padEnd(28)}${isNaN(m.starCount as number) ? '' : `${m.starCount} ${Theme.colors.yellow('*')}`.padStart(18)} - ${Theme.colors.gray(m.description?.slice(0, 50) || '')}`, // ⁕※⁎×* 
                     value: `kopomodule#${m.name}`
                 })),
+                ...(moduleList.modules.length === 0 ? [UI.listOptions.disabled('No modules found...')] : []),
 
                 UI.listOptions.empty,
                 separatorWithInfo,
+                ...(options.query ? []: [browseOptions.search]),
                 browseOptions.next,
                 browseOptions.prev,
                 UI.listOptions.back
             ],
             default: options.last
         });
+
+        if(browseOptions.search.is(selected)) {
+            UI.cls();
+            await SearchPage.show(args, {registries: [registry]});
+            UI.cls();
+            return this.showBrowsePage(registry, args, options);
+        }
 
         if(browseOptions.next.is(selected)) {
             UI.upInCL(2);
@@ -64,8 +75,7 @@ export class BrowsePage {
         }
 
         if(selected.startsWith('kopomodule#')) {
-            UI.upInCL(2);
-            UI.clearLine();
+            UI.cls();
             await ModulePage.show(args, {module: selected.split('#')[1], registry, showTitle: true});
             options.last = selected;
             return await BrowsePage.showBrowsePage(registry, args, options);
