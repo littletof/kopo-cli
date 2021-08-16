@@ -2,13 +2,14 @@
 const FtoEMap: any = {
     "--unstable": '🚧',
     "--allow-net": "🌐",
-    "--allow-read": "🔍",
+    "--allow-read": "🔍", // 👓
     "--allow-write": "💾",
     "--allow-hrtime": "⏱",
     "--allow-run": "⚠",
     "--allow-all": "🔮",
     "--allow-env": "🧭",
     "--allow-plugin": "🧩",
+    "--location": "🔰"
 }
 
 const flagRegexp = new RegExp(/\| .*\s?\`(--[^`]*)\`\s*\|([\s_\*(?:Y|yes)]*)\|(?:([^\|\n]*)\|)?/g);
@@ -31,7 +32,7 @@ export type FlagType =
     | "--allow-all"
     | "--allow-env"
     | "--allow-plugin"
-    // | // TODO location?!
+    | "--location"   
 
 export interface Flags {
     required: {flag: FlagType, description?: string}[];

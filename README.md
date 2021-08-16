@@ -69,6 +69,7 @@ A table could look something like this:
 |:--|:-:|:--|
 | 🚧 `--unstable`  | * | Needed for [Cliffy](https://github.com/c4spar/deno-cliffy) to work |
 | 🌐 `--allow-net` | * | To fetch data from the repos |
+| 🔰 `--location` |   | To save settings. `https://kopo.mod.land` |
 | 🔍 `--allow-read` | _ | Needed for cache info |
 | 💾 `--allow-write` | _ | Save favourites |
 | ⏱ `--allow-hrtime` | _ | Allows precise benchmarking |
