@@ -8,35 +8,45 @@ import { SearchPage } from "./search_page.ts";
 
 export class HomePage {
     static async show(args: Args, options?: {}) {
-        const option = await UI.selectList({
+
+        const homeOptions = {
+            browse: UI.selectListOption({name: 'browse'}),
+            search: UI.selectListOption({name: 'search'}),
+            registries: UI.selectListOption({name: 'registries'}),
+            settings: UI.selectListOption({name: "settings", disabled: !Settings.isSettingsAvailable(), disabledName: "settings (no localStorage)"}),
+            help: UI.selectListOption({name: 'help'}),
+            exit: UI.selectListOption({name: 'exit'}),
+        }
+
+        const selected = await UI.selectList({
             message: "KOPO CLI", 
             options: [
-                "browse",
-                "search",
-                "registries",
-                UI.selectListOption({name: "settings", disabled: !Settings.isSettingsAvailable(), disabledName: "options (no localStorage)"}),
-                "help",
-                "exit"
+                homeOptions.browse,
+                homeOptions.search,
+                homeOptions.registries,
+                homeOptions.settings,
+                homeOptions.help,
+                homeOptions.exit,
             ],
             // default: "exit"
         });
 
-        if(option === 'browse') {
+        if(homeOptions.browse.is(selected)) {
             UI.cls();
             await BrowsePage.show(args);
         }
 
-        if(option === 'search') {
+        if(homeOptions.search.is(selected)) {
             UI.cls();
             await SearchPage.show(args);
         }
     
-        if(option === 'registries') {
+        if(homeOptions.registries.is(selected)) {
             UI.cls();
             await RegistriesPage.show(args);
         }
 
-        if(option === "settings") {
+        if(homeOptions.settings.is(selected)) {
             UI.cls();
             await OptionsPage.show(args);
         }
@@ -51,7 +61,7 @@ export class HomePage {
             await search({_: ['search', s ], exact:true, readme: true});
         } */
     
-        if(option !== 'exit') { // TODO remove
+        if(selected !== 'exit') { // TODO remove
             UI.cls();
             await HomePage.show(args);
         }

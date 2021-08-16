@@ -76,4 +76,8 @@ export class UI {
             // keys: {complete: ["enter", "right"]}
         });
     }
+
+    static async confirm(opts: {message: string}){
+        return confirm(opts.message);
+    }
 }
