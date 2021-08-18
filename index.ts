@@ -8,6 +8,8 @@ import {DenoRegistry, NestRegistry} from "./registries/registry.ts";
 import { Theme } from "./theme.ts";
 import { HomePage } from "./pages/home_page.ts";
 import { UI } from "./ui.ts";
+import { settingsCLI } from "./cli/settings_cli.ts";
+import { RegistryHandler } from "./registries/registry_handler.ts";
 
 // TODO rename file to cli.ts
 
@@ -104,12 +106,14 @@ async function search(args: Args) {
 }
 
 const parsedArgs = parse(Deno.args, {
-    boolean: ['json', 'readme', 'readme-raw', 'exact'], 
-    alias: {e: "exact", v: "version", r: 'readme', w: "readme-raw"}
+    boolean: ['json', 'readme', 'readme-raw', 'exact', 'yes'], 
+    alias: {e: "exact", v: "version", r: 'readme', w: "readme-raw", y: "yes"}
 });
 // console.log(parsedArgs);
 if(parsedArgs._?.length) {
     const cmd = parsedArgs._[0];
+
+    await RegistryHandler.initRegistries(parsedArgs);
 
     switch(cmd) {
         case "search":
@@ -125,5 +129,10 @@ if(parsedArgs._?.length) {
             await Theme.init();
             await HomePage.show(parsedArgs);
             break;
+
+        case "settings": {
+            await settingsCLI(parsedArgs);
+            break;
+        }
     }
 }

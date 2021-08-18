@@ -89,7 +89,8 @@ export const KopoOptions: {[key: string]: OptionConf} = {
     "cls": booleanOption({key: "cls", name: "Cls on start", def: true, help: "When set to `true`, the console is cleared on start.\nSame as a `cls` command."}),
     "rawreadme": booleanOption({key: "rawreadme", name: "Print raw readme", def: false}),
 
-    "registries": {key: "registires", name: "Registries", hidden: true, def: {}}
+    "registries": {key: "registries", name: "Registries", hidden: true, def: {}},
+    "registry_addons": {key: "registry_addons", name: "Registry addons", def: [], valueSet: [], valueTf: v => v?.length ? `${v?.length} addons`: 'No addons'}
 }
 
 export class Settings {

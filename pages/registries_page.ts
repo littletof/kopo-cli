@@ -11,7 +11,7 @@ export class RegistriesPage {
 
         const registriesSettings = await Settings.getKopoOption(KopoOptions.registries);
 
-        const registriesOptions = RegistryHandler.getAllRegistries().map(r => {
+        const registriesOptions = (await RegistryHandler.getAllRegistries()).map(r => {
             const reg = r.getRegistryInfo();
            
             /* ${reg.icon || '🗂🧮'}  */
@@ -70,7 +70,7 @@ export class RegistriesPage {
         }
 
 
-        UI.clearLine();
+        UI.cls();
         return await this.show(args, options);
     }
 }
