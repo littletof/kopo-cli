@@ -47,7 +47,7 @@ export class RegistriesPage {
         UI.clearLine();
 
         const disabled = registriesSettings?.[selectedOption] === false;
-        const cliAddon = !!registry.addonUrl && !registry.fromSettings;
+        const cliAddon = !!registry.addonUrl && !registry.fromSettings; // could allow disable, but if provied as flag, user should use it.
 
         const registryOptions = {
             enable: UI.selectListOption({name: 'Enable', disabled:  !disabled || cliAddon, value: 'enable'}),

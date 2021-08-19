@@ -90,7 +90,7 @@ export class RegistryHandler {
     }
 
     private static getRegistriesListFromArgs(args: string[]): {addons: string[]; keys: string[]} | undefined {
-        const parsedArgs = parse(args);
+        const parsedArgs = parse(args, {alias: {r: "registries"}});
         if(parsedArgs.registries) {
             return this.getRegistriesListFromFlag(parsedArgs.registries);
         }

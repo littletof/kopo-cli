@@ -46,7 +46,7 @@ async function search(args: Args) {
             const module = await registry.getModuleInfo(searchTerm, args.version);
             
             if(!module) {
-                console.error("Module not found. If you want to search for a term don't use \"--exact\" or \"-e\" flag");
+                console.error("Module not found. If you want to search for a term don't use the \"--exact\" or \"-e\" flag.\n");
                 return;
             }
 
@@ -57,7 +57,7 @@ async function search(args: Args) {
             }
 
             if(args.json) {
-                console.log(JSON.stringify(Object.assign(module, {readmeText: undefined})));
+                console.log(JSON.stringify(Object.assign(module, {readmeText: undefined}), undefined, 4));
                 return;
             }
 
@@ -83,7 +83,8 @@ async function search(args: Args) {
             }
 
             if(args.json) {
-                console.log({deno: moduleList.modules});
+                const registryResult = await (await RegistryHandler.getRegistries()).reduce(async (prev, r) => Object.assign(await prev, {[r.getRegistryInfo().key]: (await r.getModulesList(searchTerm)).modules}), Promise.resolve({}));
+                console.log(JSON.stringify(registryResult, undefined, 4));
                 return;
             } else {
                 console.log(`Found modules: `);
@@ -100,35 +101,46 @@ async function search(args: Args) {
     }
 }
 
-const parsedArgs = parse(Deno.args, {
-    boolean: ['json', 'readme', 'readme-raw', 'exact', 'yes'], 
-    alias: {e: "exact", v: "version", r: 'readme', w: "readme-raw", y: "yes"}
-});
-// console.log(parsedArgs);
+async function startUI(args: Args) {
+    if(await Settings.getKopoOption(KopoOptions.cls)) {
+        UI.cls();
+    }
 
-if(parsedArgs._?.length) {
-    const cmd = parsedArgs._[0];
+    console.log(); // so upInCL+clear doesnt jump
+    // await Settings.setOption(KopoOptions.theme.key, "random");
 
+    await HomePage.show(args);
+}
+
+async function run() {
+    const parsedArgs = parse(Deno.args, {
+        boolean: ['json', 'readme', 'readme-raw', 'exact', 'yes'], 
+        alias: {e: "exact", v: "version", y: "yes"}
+    });
+    // console.log(parsedArgs);
+    
+    await Theme.init();
     await RegistryHandler.initRegistries(parsedArgs);
-
-    switch(cmd) {
-        case "search":
-            await search(parsedArgs);
-            break;
-        case "ui":
-            if(await Settings.getKopoOption(KopoOptions.cls)) {
-                UI.cls();
+    
+    if(parsedArgs._?.length) {
+        const cmd = parsedArgs._[0];
+    
+        switch(cmd) {
+            case "search":
+                await search(parsedArgs);
+                break;
+            case "ui":
+                await startUI(parsedArgs);
+                break;
+    
+            case "settings": {
+                await settingsCLI(parsedArgs);
+                break;
             }
-
-            console.log(); // so upInCL+clear doesnt jump
-            // await Settings.setOption(KopoOptions.theme.key, "random");
-            await Theme.init();
-            await HomePage.show(parsedArgs);
-            break;
-
-        case "settings": {
-            await settingsCLI(parsedArgs);
-            break;
         }
+    } else {
+        await startUI(parsedArgs);
     }
 }
+
+await run();

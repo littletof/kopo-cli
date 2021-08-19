@@ -17,7 +17,7 @@ export interface ModulesListPage {
     query?: string;
 }
 export interface ModuleInfo {
-    origin?: "DENO" | "NEST";
+    origin?: string;
     info?: {
         name: string;
         description?: string;
@@ -155,7 +155,7 @@ export class DenoRegistry extends Registry {
             return undefined;
         }
 
-        const moduleData: Partial<ModuleInfo> = {origin: "DENO"};
+        const moduleData: Partial<ModuleInfo> = {origin: DenoRegistry.key};
 
         const versionInfo = await this.fetch<{latest: string, versions: string[]}>(`https://cdn.deno.land/${moduleName}/meta/versions.json`);
 
@@ -309,7 +309,7 @@ export class NestRegistry extends Registry {
         version = version ?? (latestVersion || undefined);
 
         const moduleData: Partial<ModuleInfo> = {
-            origin: "NEST",
+            origin: NestRegistry.key,
             info: {
                 name: moduleInfo.name,
                 description: moduleInfo.description,
