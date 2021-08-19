@@ -1,5 +1,4 @@
-import { Args } from "https://deno.land/std@0.97.0/flags/mod.ts";
-import { renderMarkdown } from "https://deno.land/x/charmd@v0.0.1/renderer.ts";
+import { Args, renderMarkdown } from "../deps.ts";
 import { RegistryHandler } from "../registries/registry_handler.ts";
 import { KopoOptions, Settings } from "../settings.ts";
 import { Theme } from "../theme.ts";

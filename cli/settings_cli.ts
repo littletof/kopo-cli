@@ -1,4 +1,4 @@
-import { Args } from "https://deno.land/std@0.97.0/flags/mod.ts";
+import { Args } from "../deps.ts";
 import { Settings } from "../settings.ts";
 
 export async function settingsCLI(args: Args) {

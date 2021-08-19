@@ -1,10 +1,11 @@
-import { Args } from "https://deno.land/std@0.97.0/flags/mod.ts";
+import { Args } from "../deps.ts";
 import { UI } from "../ui.ts";
 import { Settings } from "../settings.ts";
 import { OptionsPage } from "./settings_page.ts";
 import { RegistriesPage } from "./registries_page.ts";
 import { BrowsePage } from "./browse_page.ts";
 import { SearchPage } from "./search_page.ts";
+import { HelpPage } from "./help_page.ts";
 
 export class HomePage {
     static async show(args: Args, options?: {}) {
@@ -49,6 +50,11 @@ export class HomePage {
         if(homeOptions.settings.is(selected)) {
             UI.cls();
             await OptionsPage.show(args);
+        }
+
+        if(homeOptions.help.is(selected)) {
+            UI.cls();
+            await HelpPage.show(args);
         }
     
         /* if(option === "search") {

@@ -1,5 +1,4 @@
-import { Args } from "https://deno.land/std@0.97.0/flags/mod.ts";
-import { renderMarkdown } from "https://deno.land/x/charmd@v0.0.1/mod.ts";
+import { Args, renderMarkdown } from "../deps.ts";
 import { printReadme } from "../common.ts";
 import { toEmojiList } from "../flag_parser.ts";
 import { ModuleInfo, Registry } from "../registries/registry.ts";
@@ -117,7 +116,7 @@ export class ModulePage {
 
     static async renderModuleInfo(module: ModuleInfo) {
         const latest = module.info?.latestVersion === module.currentVersion;
-        console.log(Theme.colors.bold(`${Theme.accent(module.info?.name!)} @ ${module.currentVersion}${latest ? Theme.colors.gray(' (latest)') : ''}`));
+        console.log(Theme.colors.bold(`${Theme.accent(module.info?.name!)}${module.invalidVersion ? '' : ` @ ${module.currentVersion}${latest ? Theme.colors.gray(' (latest)') : ''}`}`));
         let lines = 1;
 
         const description = renderMarkdown(">"+module.info?.description);

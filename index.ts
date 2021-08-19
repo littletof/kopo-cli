@@ -1,5 +1,4 @@
-import { Args, parse } from "https://deno.land/std@0.97.0/flags/mod.ts";
-import {renderMarkdown} from "https://deno.land/x/charmd@v0.0.1/mod.ts";
+import { Args, parse, renderMarkdown } from "./deps.ts";
 import { toEmojiList } from "./flag_parser.ts";
 import {KopoOptions, Settings} from "./settings.ts";
 

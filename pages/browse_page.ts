@@ -1,5 +1,4 @@
-import { Args } from "https://deno.land/std@0.97.0/flags/mod.ts";
-import { renderMarkdown } from "https://deno.land/x/charmd@v0.0.1/mod.ts";
+import { Args, renderMarkdown } from "../deps.ts";
 import { Registry } from "../registries/registry.ts";
 import { RegistryHandler } from "../registries/registry_handler.ts";
 import { Theme } from "../theme.ts";
@@ -32,9 +31,9 @@ export class BrowsePage {
         UI.upInCL(1);
 
         const browseOptions = {
-            search: UI.selectListOption({name: 'Search', value:'kopo_search'}),
             next: UI.selectListOption({name: 'Next page', value:'kopo_next', disabled: moduleList.totalPages === 0 || moduleList.page === moduleList.totalPages}),
-            prev: UI.selectListOption({name: 'Previous page', value:'kopo_prev', disabled: moduleList.totalPages === 0 || moduleList.page === 1})
+            prev: UI.selectListOption({name: 'Previous page', value:'kopo_prev', disabled: moduleList.totalPages === 0 || moduleList.page === 1}),
+            search: UI.selectListOption({name: 'Search', value:'kopo_search'}),
         }
 
         const selected = await UI.selectList({

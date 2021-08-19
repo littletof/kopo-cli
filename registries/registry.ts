@@ -27,7 +27,6 @@ export interface ModuleInfo {
 
         repository?: string;
         moduleRoute?: string;
-        // importRoute?: string;
     },
     invalidVersion?: boolean;
     currentVersion?: string,
@@ -168,7 +167,6 @@ export class DenoRegistry extends Registry {
             description: moduleInfo.data.description,
             start_count: moduleInfo.data.star_count,
             moduleRoute: `https://deno.land/x/${moduleName}${version!== versionInfo?.latest ? `@${version}`: ""}`,
-            // importRoute: `https://deno.land/x/${moduleName}${version!== versionInfo?.latest ? `@${version}`: ""}`
         };
         moduleData.invalidVersion = invalidVersion;
 
@@ -315,7 +313,6 @@ export class NestRegistry extends Registry {
                 versions: moduleInfo.packageUploadNames?.map(pn => pn.split("@")[1]),
                 latestVersion: latestVersion,
                 repository: moduleInfo.repository,
-                // importRoute: `https://x.nest.land/${moduleName}@${version}`,
                 moduleRoute: `https://nest.land/package/${moduleName}`
             }
         };

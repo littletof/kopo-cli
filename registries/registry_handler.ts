@@ -1,4 +1,4 @@
-import { Args } from "https://deno.land/std@0.97.0/flags/mod.ts";
+import { Args } from "../deps.ts";
 import { KopoOptions, Settings } from "../settings.ts";
 import { UI } from "../ui.ts";
 import { DenoRegistry, NestRegistry, Registry } from "./registry.ts";

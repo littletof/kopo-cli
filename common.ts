@@ -1,4 +1,4 @@
-import { renderMarkdown } from "https://deno.land/x/charmd@v0.0.1/mod.ts";
+import { renderMarkdown } from "./deps.ts";
 import { KopoOptions, Settings } from "./settings.ts";
 
 export async function printReadme(text: string) {

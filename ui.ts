@@ -1,6 +1,5 @@
-import { renderMarkdown } from "https://deno.land/x/charmd@v0.0.1/renderer.ts";
-import { Input } from "https://deno.land/x/cliffy@v0.19.1/prompt/input.ts";
-import { Select, SelectValueOptions } from "https://deno.land/x/cliffy@v0.19.1/prompt/select.ts";
+import { renderMarkdown } from "./deps.ts";
+import { Select, SelectValueOptions, Input } from "./deps.ts";
 import { Theme } from "./theme.ts";
 import { backspace, upInCL } from "./utils.ts";
 
