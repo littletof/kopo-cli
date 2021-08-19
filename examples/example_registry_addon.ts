@@ -1,5 +1,5 @@
+import { colors } from "../deps.ts";
 import { Registry } from "../registries/registry.ts";
-import { Theme } from "../theme.ts";
 
 export class TestRegistry extends Registry {
     static key = 'test';
@@ -11,7 +11,7 @@ export class TestRegistry extends Registry {
     getRegistryInfo() {
         return {
             key: TestRegistry.key,
-            name: Theme.colors.magenta('TEST/x'),
+            name: colors.magenta('TEST/x'),
             icon: '🐛',
             url: 'https://test.land',
             description: '`TEST ADDON REGISTRY`'

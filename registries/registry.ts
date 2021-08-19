@@ -37,6 +37,9 @@ export interface ModuleInfo {
 }
 
 export abstract class Registry {
+    addonUrl?: string;
+    fromSettings?: boolean;
+
     static cache = new Map<string, unknown>();
 
     abstract getRegistryInfo(): {name: string, key: string, icon?: string, description?: string, url?: string};

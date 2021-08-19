@@ -1,4 +1,4 @@
-import { Args } from "../deps.ts";
+import { Args, parse } from "../deps.ts";
 import { KopoOptions, Settings } from "../settings.ts";
 import { UI } from "../ui.ts";
 import { DenoRegistry, NestRegistry, Registry } from "./registry.ts";
@@ -10,10 +10,13 @@ export class RegistryHandler {
     }
 
     static async initRegistries(args: Args) {
-        // TODO registries added by args
         const registryAddonsFromSettings = await Settings.getKopoOption(KopoOptions.registry_addons);
-        const addons = await RegistryHandler.loadRegistriesFromUrl(registryAddonsFromSettings);
-        addons.forEach(addon => this.registries[addon.getRegistryInfo().key] = addon);
+        const loadedRegistryAddons = (await RegistryHandler.loadRegistriesFromUrl(registryAddonsFromSettings)).map(la => {la.fromSettings = true; return la});
+
+        const cliRegistries = this.getRegistriesListFromArgs(Deno.args) || {addons:[]};
+        const loadedCliRegistries = await RegistryHandler.loadRegistriesFromUrl(cliRegistries.addons);
+
+        [...loadedRegistryAddons, ...loadedCliRegistries].forEach(addon => this.registries[addon.getRegistryInfo().key] = addon);
     }
 
     static getRegistry(key: string): Registry {
@@ -21,15 +24,24 @@ export class RegistryHandler {
     }
 
     static async getAllRegistries() {
-        // TODO handle Deno.args + {disabled}
         return Object.values(RegistryHandler.registries);
     }
 
     static async getRegistries() {
-        // TODO handle Deno.args
-        const selectedRegistries = await Settings.getKopoOption(KopoOptions.registries);
+        const allRegistries = await this.getAllRegistries();
 
-        return (await this.getAllRegistries()).filter(r => selectedRegistries[r.getRegistryInfo().key] !== false);
+        const registriesInSettings = await Settings.getKopoOption(KopoOptions.registries);
+        const registryIsNonDisabled = (registry: Registry) => {
+            return registriesInSettings[registry.getRegistryInfo().key] !== false;
+        }
+        
+        const cliRegisties = this.getRegistriesListFromArgs(Deno.args);
+        const registryAddedFromCli = (registry: Registry) => {
+            return cliRegisties?.keys.includes(registry.getRegistryInfo().key) 
+                || (registry.addonUrl && cliRegisties?.addons.includes(registry.addonUrl));
+        }
+
+        return allRegistries.filter(r => cliRegisties ? registryAddedFromCli(r) : registryIsNonDisabled(r));
     }
 
     static async getRegistryWithSelector(): Promise<Registry | undefined> {
@@ -68,12 +80,40 @@ export class RegistryHandler {
         const addons: Registry[] = (await Promise.all(urls.map(async (raUrl: string, i: number) => {
             try {
                 const addon = await import(raUrl);
-                return addon.getAddonRegistry();
+                return Object.assign(addon.getAddonRegistry(),{addonUrl: raUrl});
             } catch(e) {
                 console.log(e, `Cant import addon from: ${raUrl}`);
             }
         })) as Registry[]).filter((addon: Registry) => !!addon);
 
         return addons;
+    }
+
+    private static getRegistriesListFromArgs(args: string[]): {addons: string[]; keys: string[]} | undefined {
+        const parsedArgs = parse(args);
+        if(parsedArgs.registries) {
+            return this.getRegistriesListFromFlag(parsedArgs.registries);
+        }
+        return undefined;
+    }
+
+    private static getRegistriesListFromFlag(regs: string | string[] | true): {addons: string[]; keys: string[]} {
+        const groupedRegistries: {addons: string[]; keys: string[]} = {addons: [], keys: []};
+
+        if(typeof regs === 'boolean') {
+            throw new Error('Needs registry keys or addon paths, when providing --registries flag');
+        }
+        const cliRegs = Array.isArray(regs) ? regs : regs.split(',');
+
+        cliRegs.forEach(reg => {
+            try {
+                new URL(reg);
+                groupedRegistries.addons.push(reg);
+            } catch {
+                groupedRegistries.keys.push(reg);
+            }
+        })
+
+        return groupedRegistries;
     }
 }

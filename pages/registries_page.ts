@@ -15,7 +15,7 @@ export class RegistriesPage {
            
             /* ${reg.icon || '🗂🧮'}  */
             return UI.selectListOption({
-                name: `${reg.name}${registriesSettings?.[reg.key] === false ? Theme.colors.gray(' (disabled)'):''}`,
+                name: `${r.addonUrl ? Theme.colors.yellow('~ '): ''}${reg.name}${registriesSettings?.[reg.key] === false ? Theme.colors.gray(' (disabled)'):''}`,
                 value: reg.key
             });
         });
@@ -35,18 +35,23 @@ export class RegistriesPage {
 
         // console.log(upInCL(2));
         UI.clearLine();
-        const info = RegistryHandler.getRegistry(selectedOption).getRegistryInfo();
-        const details = renderMarkdown(`**KOPO CLI - Registries - ${info.icon ? info.icon + " ":""}${info.name}**\n\n${info.description ? '> ' + info.description : ''}`)+`\nHome page: ${Theme.colors.cyan(info.url ? `${info.url}` : '')}`;
+        const registry = RegistryHandler.getRegistry(selectedOption);
+        const info = registry.getRegistryInfo();
+
+        const addonInfo = `${registry.addonUrl ? Theme.colors.yellow(`**Addon from ${(registry.fromSettings ? 'settings' : '*--registries* cli flag')}**\nPath: ${Theme.colors.cyan(registry.addonUrl)}`) : ''}`
+
+        const details = renderMarkdown(`**KOPO CLI - Registries - ${info.icon ? info.icon + " ":""}${info.name}**\n${addonInfo}\n${info.description ? '> ' + info.description : ''}`)+`\nHome page: ${Theme.colors.cyan(info.url ? `${info.url}` : '')}`;
         const lines = details.split('\n').length;
         console.log(details);
         console.log();
         UI.clearLine();
 
         const disabled = registriesSettings?.[selectedOption] === false;
+        const cliAddon = !!registry.addonUrl && !registry.fromSettings;
 
         const registryOptions = {
-            enable: UI.selectListOption({name: 'Enable', disabled:  !disabled, value: 'enable'}),
-            disable: UI.selectListOption({name: 'Disable', disabled:  disabled, value: 'disable'}),
+            enable: UI.selectListOption({name: 'Enable', disabled:  !disabled || cliAddon, value: 'enable'}),
+            disable: UI.selectListOption({name: 'Disable', disabled:  disabled || cliAddon, value: 'disable'}),
         }
 
         const selected = await UI.selectList({

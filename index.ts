@@ -9,6 +9,7 @@ import { HomePage } from "./pages/home_page.ts";
 import { UI } from "./ui.ts";
 import { settingsCLI } from "./cli/settings_cli.ts";
 import { RegistryHandler } from "./registries/registry_handler.ts";
+import { ModulePage } from "./pages/module_page.ts";
 
 // TODO rename file to cli.ts
 
@@ -38,10 +39,10 @@ async function search(args: Args) {
 
     if(args._.length>1) {
         const searchTerm = `${args._[1]}`;
-        const dr = new DenoRegistry();
+        const registry = (await RegistryHandler.getRegistries())[0];
 
         if(args.exact) {
-            const module = await dr.getModuleInfo(searchTerm, args.version);
+            const module = await registry.getModuleInfo(searchTerm, args.version);
             
             if(!module) {
                 console.error("Module not found. If you want to search for a term don't use \"--exact\" or \"-e\" flag");
@@ -55,7 +56,7 @@ async function search(args: Args) {
             }
 
             if(args.json) {
-                console.log(module);
+                console.log(JSON.stringify(Object.assign(module, {readmeText: undefined})));
                 return;
             }
 
@@ -69,17 +70,11 @@ async function search(args: Args) {
                 return;
             }
 
-            console.log(`%c${module.info?.name} %c@ %c${module.currentVersion}`,"color: #ff00ff; font-weight: bold", "", "color: #00ff55");
-            console.log(module.info?.description);
-            console.log(`Latest version: ${module.info?.latestVersion}`);
-            console.log(`📍 ${module.info?.repository}`);
-            console.log("📦 " + module.info?.moduleRoute); // 🔗
-            // console.log("📦 " + module.info?.importRoute); // TODO remove, 
-            console.log(`Flags: ${toEmojiList(module.flags)}`); // TODO fix
+            await ModulePage.renderModuleInfo(module);
             return;
         }
 
-        const moduleList = await dr.getModulesList(searchTerm);
+        const moduleList = await registry.getModulesList(searchTerm);
         if(moduleList.modules.length) {
 
             if(args.readme) {
@@ -109,6 +104,7 @@ const parsedArgs = parse(Deno.args, {
     alias: {e: "exact", v: "version", r: 'readme', w: "readme-raw", y: "yes"}
 });
 // console.log(parsedArgs);
+
 if(parsedArgs._?.length) {
     const cmd = parsedArgs._[0];
 
