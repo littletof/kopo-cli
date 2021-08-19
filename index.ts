@@ -34,6 +34,7 @@ import { ModulePage } from "./pages/module_page.ts";
 // TODO test with module husky
 
 // deno run --allow-net --no-check --unstable --location https://kopo.land index.ts ui
+// deno run --allow-net --no-check --unstable --location https://kopo.land --allow-write --allow-read index.ts settings import ./test.json --yes
 
 async function search(args: Args) {
 

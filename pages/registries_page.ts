@@ -15,7 +15,7 @@ export class RegistriesPage {
            
             /* ${reg.icon || '🗂🧮'}  */
             return UI.selectListOption({
-                name: `${r.addonUrl ? Theme.colors.yellow('~ '): ''}${reg.name}${registriesSettings?.[reg.key] === false ? Theme.colors.gray(' (disabled)'):''}`,
+                name: `${r.addonUrl ? Theme.colors.yellow(`${r.fromSettings ? '*': '~'} `): ''}${reg.name}${registriesSettings?.[reg.key] === false ? Theme.colors.gray(' (disabled)'):''}`,
                 value: reg.key
             });
         });
