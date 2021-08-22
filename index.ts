@@ -1,5 +1,5 @@
 import { Args, parse } from "./deps.ts";
-import {KopoOptions, Settings} from "./settings.ts";
+import { KopoOptions, Settings } from "./settings.ts";
 import { Theme } from "./theme.ts";
 import { HomePage } from "./pages/home_page.ts";
 import { UI } from "./ui.ts";
@@ -26,52 +26,49 @@ import { search } from "./cli/search_cli.ts";
 // search from an import route
 //      kopo find?? https://deno.land/x/kopo@v0.0.2/parse_flags.ts -> kopo search kopo -e -v v0.0.2
 
-
 // TODO test with module husky
 
 // deno run --allow-net --no-check --unstable --location https://kopo.land index.ts ui
 // deno run --allow-net --no-check --unstable --location https://kopo.land --allow-write --allow-read index.ts settings import ./test.json --yes
 
-
-
 async function startUI(args: Args) {
-    if(await Settings.getKopoOption(KopoOptions.cls)) {
-        UI.cls();
-    }
+  if (await Settings.getKopoOption(KopoOptions.cls)) {
+    UI.cls();
+  }
 
-    console.log(); // so upInCL+clear doesnt jump    
+  console.log(); // so upInCL+clear doesnt jump
 
-    await HomePage.show(args);
+  await HomePage.show(args);
 }
 
 async function run() {
-    const parsedArgs = parse(Deno.args, {
-        boolean: ['json', 'readme', 'readme-raw', 'exact', 'yes', 'flags'], 
-        alias: {e: "exact", v: "version", y: "yes"}
-    });
-    
-    await Theme.init();
-    await RegistryHandler.initRegistries(parsedArgs);
-    
-    if(parsedArgs._?.length) {
-        const cmd = parsedArgs._[0];
-    
-        switch(cmd) {
-            case "search":
-                await search(parsedArgs);
-                break;
-            case "ui":
-                await startUI(parsedArgs);
-                break;
-    
-            case "settings": {
-                await settingsCLI(parsedArgs);
-                break;
-            }
-        }
-    } else {
+  const parsedArgs = parse(Deno.args, {
+    boolean: ["json", "readme", "readme-raw", "exact", "yes", "flags"],
+    alias: { e: "exact", v: "version", y: "yes" },
+  });
+
+  await Theme.init();
+  await RegistryHandler.initRegistries(parsedArgs);
+
+  if (parsedArgs._?.length) {
+    const cmd = parsedArgs._[0];
+
+    switch (cmd) {
+      case "search":
+        await search(parsedArgs);
+        break;
+      case "ui":
         await startUI(parsedArgs);
+        break;
+
+      case "settings": {
+        await settingsCLI(parsedArgs);
+        break;
+      }
     }
+  } else {
+    await startUI(parsedArgs);
+  }
 }
 
 await run();
