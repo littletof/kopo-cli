@@ -85,9 +85,10 @@ export function booleanOption(options: OptionConf & {valueSet?: never, valueTf?:
 }
 
 export const KopoOptions: {[key: string]: OptionConf} = {
-    "theme": {key: "theme", name: "Theme", def: "yellow", valueTf: (v:string) => Theme.getColorForTheme(v)(v), valueSet: Object.keys(Theme.themes), onChange: async v => await Theme.init()},
+    "theme": {key: "theme", name: "Theme", def: "blue", valueTf: (v:string) => Theme.getColorForTheme(v)(v), valueSet: Object.keys(Theme.themes), onChange: async v => await Theme.init()},
     "cls": booleanOption({key: "cls", name: "Cls on start", def: true, help: "When set to `true`, the console is cleared on start.\nSame as a `cls` command."}),
     "rawreadme": booleanOption({key: "rawreadme", name: "Print raw readme", def: false}),
+    "pagesize": {key: "pagesize", name: "Page size", def: 10, valueSet: [5, 10, 25, 50, 100], help: "This defines, how many modules should appear on one page, when\nbrowsing or searching modules.\nOnly change this, if you have enough vertical terminal space."},
 
     "registries": {key: "registries", name: "Registries", hidden: true, def: {}},
     "registry_addons": {key: "registry_addons", name: "Registry addons", def: [], valueSet: [], valueTf: v => v?.length ? `${v?.length} addons`: 'No addons'}

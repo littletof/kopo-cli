@@ -1,6 +1,7 @@
 import { Args, renderMarkdown } from "../deps.ts";
 import { Registry } from "../registries/registry.ts";
 import { RegistryHandler } from "../registries/registry_handler.ts";
+import { KopoOptions, Settings } from "../settings.ts";
 import { Theme } from "../theme.ts";
 import { UI } from "../ui.ts";
 import { ModulePage } from "./module_page.ts";
@@ -25,8 +26,8 @@ export class BrowsePage {
 
         options = Object.assign({page: 1}, options); // default options
 
-        const moduleList = await registry.getModulesList(options.query, options.page, 10); // TODO pageSize to Settings
-        const separatorWithInfo = Object.assign({}, UI.listOptions.separator, {name: `------ ${moduleList.page}/${moduleList.totalPages} (${moduleList.totalModules}) ------`})
+        const moduleList = await registry.getModulesList(options.query, options.page, await Settings.getKopoOption(KopoOptions.pagesize));
+        const separatorWithInfo = Object.assign({}, UI.listOptions.separator, {name: `---------- ${Theme.colors.bold(`${moduleList.page}`)} ${Theme.colors.reset(Theme.accent('/'))} ${moduleList.totalPages} ${Theme.colors.gray(`(${moduleList.totalModules})`)} ----------`})
 
         UI.upInCL(1);
 
@@ -40,7 +41,7 @@ export class BrowsePage {
             message: '                         ',
             options: [
                 ...moduleList.modules.map(m => UI.selectListOption({
-                    name: `${m.name.padEnd(28)}${isNaN(m.starCount as number) ? '' : `${m.starCount} ${Theme.colors.yellow('*')}`.padStart(18)} - ${Theme.colors.gray(m.description?.slice(0, 50) || '')}`, // ⁕※⁎×* 
+                    name: `${m.name.padEnd(28)}${isNaN(m.starCount as number) ? '' : `${Theme.colors.italic(`${m.starCount}`)} ${Theme.colors.yellow('*')}`.padStart(26)} - ${Theme.colors.gray(m.description?.slice(0, 50) + (m.description && m.description.length > 50 ? "...": ""))}`, 
                     value: `kopomodule#${m.name}`
                 })),
                 ...(moduleList.modules.length === 0 ? [UI.listOptions.disabled('No modules found...')] : []),
@@ -52,7 +53,8 @@ export class BrowsePage {
                 browseOptions.prev,
                 UI.listOptions.back
             ],
-            default: options.last
+            default: options.last,
+            maxRows: await Settings.getKopoOption(KopoOptions.pagesize) + 10
         });
 
         if(browseOptions.search.is(selected)) {
@@ -63,13 +65,11 @@ export class BrowsePage {
         }
 
         if(browseOptions.next.is(selected)) {
-            UI.upInCL(2);
-            UI.clearLine();
+            UI.cls();
             await this.showBrowsePage(registry, args, {page: moduleList.page+1, last: moduleList.page+1 !== moduleList.totalPages ? browseOptions.next.value : undefined});
         }
         if(browseOptions.prev.is(selected)) {
-            UI.upInCL(2);
-            UI.clearLine();
+            UI.cls();
             await this.showBrowsePage(registry, args, {page: moduleList.page-1, last: moduleList.page-1 !== 1 ? browseOptions.prev.value : undefined});
         }
 

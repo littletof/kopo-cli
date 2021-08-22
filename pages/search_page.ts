@@ -53,7 +53,7 @@ export class SearchPage {
         }
 
         const exactOpts = exactMatches.map(r => ({result: r, ...UI.selectListOption({
-            name: `${r?.registry.getRegistryInfo().name} - ${r?.result.info?.name}${` @ ${r!.result.invalidVersion ? r?.result.info?.latestVersion : r?.result.currentVersion}`}`,
+            name: `${r?.registry.getRegistryInfo().name} - ${Theme.accent(`${r?.result.info?.name}`)}${` @ ${r!.result.invalidVersion ? r?.result.info?.latestVersion : r?.result.currentVersion}`}`,
             value: r?.registry.getRegistryInfo().key,
         })}))
         .filter(r => !r.result?.result.invalidVersion); // when searching with version, only show exact version matches. TODO rework, show module, with not exact version

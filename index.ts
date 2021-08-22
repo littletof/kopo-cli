@@ -10,6 +10,7 @@ import { UI } from "./ui.ts";
 import { settingsCLI } from "./cli/settings_cli.ts";
 import { RegistryHandler } from "./registries/registry_handler.ts";
 import { ModulePage } from "./pages/module_page.ts";
+import { SearchPage } from "./pages/search_page.ts";
 
 // TODO rename file to cli.ts
 
@@ -56,6 +57,19 @@ async function search(args: Args) {
                 return;
             }
 
+            if(args.flags) {
+                if(args.json) {
+                    console.log(JSON.stringify(module.flags, undefined, 4));
+                    return;
+                }
+
+                const latest = module.info?.latestVersion === module.currentVersion;
+                const title = Theme.colors.bold(`${Theme.accent(module.info?.name!)}${module.invalidVersion ? '' : ` @ ${module.currentVersion}${latest ? Theme.colors.gray(' (latest)') : ''}`}\n`);
+                console.log(title);
+                await ModulePage.renderFlagsInfo(module);
+                return;
+            }
+
             if(args.json) {
                 console.log(JSON.stringify(Object.assign(module, {readmeText: undefined}), undefined, 4));
                 return;
@@ -96,8 +110,12 @@ async function search(args: Args) {
             console.log("Module not found");
         }
     } else {
-        // TODO UI
-        console.log("%cTODO Open UI on search page", "color: #ff5522");
+        if(await Settings.getKopoOption(KopoOptions.cls)) {
+            UI.cls();
+        }
+        await SearchPage.show(args);
+        UI.cls();
+        return await HomePage.show(args);
     }
 }
 
@@ -114,7 +132,7 @@ async function startUI(args: Args) {
 
 async function run() {
     const parsedArgs = parse(Deno.args, {
-        boolean: ['json', 'readme', 'readme-raw', 'exact', 'yes'], 
+        boolean: ['json', 'readme', 'readme-raw', 'exact', 'yes', 'flags'], 
         alias: {e: "exact", v: "version", y: "yes"}
     });
     // console.log(parsedArgs);

@@ -1,9 +1,8 @@
 import { Args, renderMarkdown } from "../deps.ts";
 import { printReadme } from "../common.ts";
-import { toEmojiList } from "../flag_parser.ts";
+import { flagToEmoji, toEmojiList } from "../flag_parser.ts";
 import { ModuleInfo, Registry } from "../registries/registry.ts";
 import { RegistryHandler } from "../registries/registry_handler.ts";
-import { Settings } from "../settings.ts";
 import { Theme } from "../theme.ts";
 import { UI } from "../ui.ts";
 import { SearchPage } from "./search_page.ts";
@@ -25,6 +24,7 @@ export class ModulePage {
 
         const moduleOptionsCandidates = {
             readme: UI.selectListOption({name: 'Show README', value: 'readme'}),
+            flags: UI.selectListOption({name: 'Show flags info', value: 'flags'}),
             diff_version: UI.selectListOption({name: 'Select a different version', value: 'diff_ver'}),
             other_registries: UI.selectListOption({name: 'Check other registries', value: 'other_regs'}),
         }
@@ -32,6 +32,10 @@ export class ModulePage {
 
         if(module.readmeText) {
             moduleOptions.push(moduleOptionsCandidates.readme);
+        }
+
+        if(module.flags) {
+            moduleOptions.push(moduleOptionsCandidates.flags);
         }
 
         if(module.info?.versions?.length! > 1) {
@@ -64,6 +68,26 @@ export class ModulePage {
             await printReadme(module.readmeText || '');
             console.log(Theme.colors.gray((`------------ End of README for (${module.info?.name})------------\n`)));
 
+            return await this.show(args, options);
+        }
+
+        if(moduleOptionsCandidates.flags.is(selected)) {
+            UI.cls();
+
+            const regInfo = options.registry.getRegistryInfo();
+            const title = renderMarkdown(`**KOPO CLI - ${regInfo.icon ? regInfo.icon + " ":""}${regInfo.name} - Module - ${Theme.accent(options.module)} @ ${module.currentVersion} - Flags 🚩**`);
+            console.log(title);
+
+            this.renderFlagsInfo(module);
+
+            await UI.selectList({
+                message: '        ',
+                options: [
+                    UI.listOptions.back
+                ],
+            });
+
+            UI.cls();
             return await this.show(args, options);
         }
 
@@ -115,30 +139,54 @@ export class ModulePage {
     }
 
     static async renderModuleInfo(module: ModuleInfo) {
-        const latest = module.info?.latestVersion === module.currentVersion;
-        console.log(Theme.colors.bold(`${Theme.accent(module.info?.name!)}${module.invalidVersion ? '' : ` @ ${module.currentVersion}${latest ? Theme.colors.gray(' (latest)') : ''}`}`));
-        let lines = 1;
+        let moduleInfoText = "";
 
-        const description = renderMarkdown(">"+module.info?.description);
-        console.log(description);
-        lines += description.split('\n').length;
+        const latest = module.info?.latestVersion === module.currentVersion;
+        moduleInfoText += Theme.colors.bold(`${Theme.accent(module.info?.name!)}${module.invalidVersion ? '' : ` @ ${module.currentVersion}${latest ? Theme.colors.gray(' (latest)') : ''}`}\n`);
+        
+
+        const description = renderMarkdown(`> ${module.info?.description}`)+"\n";
+        moduleInfoText += description;
+
 
         if(!isNaN(module.info?.start_count as any)) {
-            console.log(`Stars: ${module.info?.start_count}⭐`);
-            lines++;
+            moduleInfoText += `**Stars:** ${Theme.colors.italic(`${module.info!.start_count}`)}⭐\n`;
         }
-        if(!latest) {
-            console.log(`Latest version: ${module.info?.latestVersion}`);
-            lines++;
-        }
-        console.log(` 📍 ${Theme.colors.cyan(module.info?.repository || '')}`);
-        console.log("📦  " + Theme.colors.cyan(module.info?.moduleRoute || '')); // 🔗
-        lines +=2;
-
         if(module.flags) {
-            lines++;
-            console.log(`Flags: ${toEmojiList(module.flags)}`); // TODO fix
+            moduleInfoText += `**Flags:** ${toEmojiList(module.flags)}\n`; // TODO fix
         }
-        return lines;
+        if(module.uploadedAt) {
+            moduleInfoText += `**Uploaded at:** ${Intl.DateTimeFormat(undefined, {dateStyle: "short", timeStyle: "short"}).format(module.uploadedAt)}\n`;
+        }
+        if(!latest && module.info?.latestVersion) {
+            moduleInfoText += `**Latest version:** ${module.info?.latestVersion}\n`;
+        }
+        moduleInfoText += '\n';
+        moduleInfoText += ` 📍 ${Theme.colors.cyan(module.info?.repository || '-')}\n`;
+        moduleInfoText += `📦 ${Theme.colors.cyan(module.info?.moduleRoute || '-')}\n`; // 🔗
+
+        console.log(renderMarkdown(moduleInfoText));
+
+        return moduleInfoText.split('\n').length;
+    }
+
+    static async renderFlagsInfo(module: ModuleInfo) {
+        let text = '';
+
+        if(!module.flags?.required && !module.flags?.optional) {
+            console.log(Theme.colors.gray('No flag definition found for this module.'));
+        }
+        
+        if(module.flags?.required.length) {
+            text+='|Required|Description|\n|:--|:--|\n'
+            module.flags?.required.forEach(f => text+= `|${flagToEmoji(f.flag)} \`${f.flag}\`|${f.description}|\n`);
+        }
+
+        if(module.flags?.optional.length) {
+            text+=`| ${Theme.colors.blue(Theme.colors.bold(`Optional`))} | ${Theme.colors.blue(Theme.colors.bold(`Description`))} |\n${text.length ? '' : '|:--|:--|\n'}`;
+            module.flags?.optional.forEach(f => text+= `|${flagToEmoji(f.flag)} \`${f.flag}\`|${f.description}|\n`);
+        }
+
+        console.log(renderMarkdown(text));
     }
 }
