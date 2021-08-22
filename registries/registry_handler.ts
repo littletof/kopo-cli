@@ -1,7 +1,9 @@
 import { Args, parse } from "../deps.ts";
 import { KopoOptions, Settings } from "../settings.ts";
 import { UI } from "../ui.ts";
-import { DenoRegistry, NestRegistry, Registry } from "./registry.ts";
+import { DenoRegistry } from "./deno_land.ts";
+import { NestRegistry } from "./nest_land.ts";
+import { Registry } from "./registry.ts";
 
 export class RegistryHandler {
     static readonly registries: {[key: string]: Registry} = {
