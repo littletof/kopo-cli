@@ -8,26 +8,26 @@ import { RegistryHandler } from "./registries/registry_handler.ts";
 import { search } from "./cli/search_cli.ts";
 import { upInCL } from "./utils.ts";
 
-// TODO rename file to cli.ts
+/*  
 
-// deno run --allow-net --no-check index.ts search pretty
-// deno run --allow-net --no-check index.ts search pretty --json
-// deno run --allow-net --no-check index.ts search pretty_benching -e
-// deno run --allow-net --no-check index.ts search pretty_benching -e --version v0.0.3
-// deno run --allow-net --no-check index.ts search pretty_benching -e --json
-// deno run --allow-net --no-check index.ts search pretty_benching -e --readme
-// deno run --allow-net --no-check index.ts search pretty_benching -e --readme-raw
-
-// ---------
-// --no-prompt
-//      if no registry is defined (-d / -n) in a --readme search eg., select deno, or next in line.
-//      otherwise, if found in multiple registries give a prompt for the user to select from. but they should be the same...
-// -e --detailed
-//      gives all versions, others from json output + readme by default?!
-// search from an import route
-//      kopo find?? https://deno.land/x/kopo@v0.0.2/parse_flags.ts -> kopo search kopo -e -v v0.0.2
-
-// TODO test with module husky
+        /\  /\
+       |  ||  |
+ ..___[.][.]   \                          ________
+ |              \                        /  ______|
+  \_____         \______________________/  /
+        |                                 /
+        \                                 |
+         \                                |
+         |    |       _____________|      /
+      ____|__/    ___/         \_  \     |
+     / __________/               \  |\   |
+    |_|   |  |                   |  | |  |
+          |  |                   |  | |  |
+        _/  /                  _/  / _/  /
+       |___/                  |___/ |___/        
+____________________________________________________
+                    KOPO CLI
+*/
 
 // deno run --allow-net --no-check --unstable --location https://kopo.land index.ts ui
 // deno run --allow-net --no-check --unstable --location https://kopo.land --allow-write --allow-read index.ts settings import ./test.json --yes
@@ -77,3 +77,22 @@ async function run() {
 }
 
 await run();
+
+// deno run --allow-net --no-check index.ts search pretty
+// deno run --allow-net --no-check index.ts search pretty --json
+// deno run --allow-net --no-check index.ts search pretty_benching -e
+// deno run --allow-net --no-check index.ts search pretty_benching -e --version v0.0.3
+// deno run --allow-net --no-check index.ts search pretty_benching -e --json
+// deno run --allow-net --no-check index.ts search pretty_benching -e --readme
+// deno run --allow-net --no-check index.ts search pretty_benching -e --readme-raw
+
+// ---------
+// --no-prompt
+//      if no registry is defined (-d / -n) in a --readme search eg., select deno, or next in line.
+//      otherwise, if found in multiple registries give a prompt for the user to select from. but they should be the same...
+// -e --detailed
+//      gives all versions, others from json output + readme by default?!
+// search from an import route
+//      kopo find?? https://deno.land/x/kopo@v0.0.2/parse_flags.ts -> kopo search kopo -e -v v0.0.2
+
+// TODO test with module husky
