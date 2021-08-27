@@ -124,7 +124,7 @@ export class NestRegistry extends Registry {
             if(versionInfo) {
                 moduleData.uploadedAt = new Date(versionInfo.package.createdAt);
                 moduleData.readmePath = this.guessReadmePath(Object.keys(versionInfo.files).map(k => versionInfo.files[k].inManifest));
-                // TODO https://nest.land/api/readme?mod=kopo@v0.0.3
+                // TODO https://nest.land/api/readme?mod=kopo@v0.1.0
                 if(moduleData.readmePath) {
                     const readmeText = await this.fetch<string>(`https://x.nest.land/${moduleName}@${version}${moduleData.readmePath}`, {text: true, cache: true});
                     moduleData.readmeText = readmeText;

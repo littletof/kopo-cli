@@ -18,13 +18,13 @@ It supports `deno.land/x` and `x.nest.land` by default, but also enables you to 
 `kopo` is intended to be as an installed user script. For that, run:
 
 ```bash
-deno install --unstable --allow-net -f --name kopo --location https://kopo.mod.land https://deno.land/x/kopo@v0.0.3/mod.ts
+deno install --unstable --allow-net -f --name kopo --location https://kopo.mod.land https://deno.land/x/kopo@v0.1.0/mod.ts
 ```
 
 To just try it out, run the following command:
 
 ```bash
-deno run --unstable --allow-net --location https://kopo.mod.land https://deno.land/x/kopo@v0.0.3/mod.ts
+deno run --unstable --allow-net --location https://kopo.mod.land https://deno.land/x/kopo@v0.1.0/mod.ts
 ```
 
 ## Features
@@ -201,13 +201,13 @@ There is a small util that you can use to test your file for the flags. It can b
 To use it simply run:
 
 ```bash
-deno run --allow-read https://deno.land/x/kopo@v0.0.3/flag_checker.ts ./README.md
+deno run --allow-read https://deno.land/x/kopo@v0.1.0/flag_checker.ts ./README.md
 ```
 
 or for remote files:
 
 ```bash
-deno run --allow-net https://deno.land/x/kopo@v0.0.3/flag_checker.ts https://raw.githubusercontent.com/littletof/kopo-cli/master/README.md
+deno run --allow-net https://deno.land/x/kopo@v0.1.0/flag_checker.ts https://raw.githubusercontent.com/littletof/kopo-cli/master/README.md
 ```
 
 ## Contribution
