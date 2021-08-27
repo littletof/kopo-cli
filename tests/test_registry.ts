@@ -64,7 +64,7 @@ export class TestRegistry extends Registry {
             },
             invalidVersion: false,
             currentVersion: 'testt',
-            uploadedAt: new Date(),
+            uploadedAt: new Date(2021,7,27,12,34),
             readmePath: 'testt',
             readmeText: 'testt',
         }

@@ -16,7 +16,7 @@ import { upInCL } from "../../utils.ts";
       Deno.test({
         name: `kopo - integration - ${name}`,
         async fn() {
-          const output: string = await runPrompt(file);
+          const output: string = await runPrompt(file.path);
           const expectedOutput: string = await getExpectedOutput(file.path);
           // console.log(JSON.stringify(cleanOutput(output).split('##CLSX##')));
           assertEquals(
@@ -62,7 +62,7 @@ import { upInCL } from "../../utils.ts";
     }
   }
   
-  function getCmdFlagsForFile(file: WalkEntry): string[] {
+  function getCmdFlagsForFile(filePath: string): string[] {
     /* if (file.name === "input_no_location_flag.ts") {
       return [
         "--unstable",
@@ -82,11 +82,9 @@ import { upInCL } from "../../utils.ts";
     ]
   }
   
-  async function runPrompt(file: WalkEntry): Promise<string> {
-    const inputPath: string = file.path.replace(/\.ts$/, ".in");
-    const inputFile = await Deno.open(inputPath);
-    const inputText = await Deno.readTextFile(inputPath);
-    const flags = getCmdFlagsForFile(file);
+  export async function runPrompt(filePath: string): Promise<string> {
+    const inputText = await Deno.readTextFile(filePath);
+    const flags = getCmdFlagsForFile(filePath);
     const process = Deno.run({
       stdin: "piped",
       stdout: "piped",
@@ -104,42 +102,16 @@ import { upInCL } from "../../utils.ts";
 
 
     let result = '';
-    process.stdin.write(new TextEncoder().encode(inputText)).then(async _ => {/* await delay(100);  */await process.stdin.write(new TextEncoder().encode('\u0003'));});
+    process.stdin.write(new TextEncoder().encode(inputText)).then(async _ => {await process.stdin.write(new TextEncoder().encode('\u0003'));/* Simulate CTRL+C */});
     for await (let a of iter(process.stdout)) {
       result += new TextDecoder().decode(a);
     }
 
-    // console.log('itsa me', cleanOutput(result));
-
-    /* const [output, bytesCopied] = await Promise.all([
-      process.output(),
-      // copy(inputFile, process.stdin),
-      new Promise<number>(async (res, rej) => { 
-        // const bytes = await copy(inputFile, process.stdin);
-        await delay(1000);
-        await process.stdin.write(new TextEncoder().encode('\u0003'));
-        process.stdin.close(); 
-        process.close(); 
-        // res(bytes);  
-        res(1);  
-      }),
-      // new Promise<number>(async (res, rej) => { const bytes = await copy(inputFile, process.stdin); setTimeout(async () => {await process.stdin.write(new TextEncoder().encode('\u0003')); res(bytes)}, 1000);  }),
-      // new Promise<number>(async (res, rej) => { const bytes = await copy(inputFile, process.stdin); await process.stdin.write(new TextEncoder().encode('\u0003')); res(bytes)  })
-      // new Promise<number>((res, rej) => { copy(inputFile, process.stdin).then(bytes => {queueMicrotask(()=> {process.stdin.write(new TextEncoder().encode('\u0003')); res(bytes);})})}),
-    ]); */
-
-    // console.log('OUT', new TextDecoder().decode(await process.output()).split(''));
-
-
-
-    inputFile.close();
     process.stdin.close();
     process.stdout.close();
     process.close();
-
   
     // assert(bytesCopied > 0, "No bytes copied");
   
-    // return new TextDecoder().decode(/* output */);
     return cleanOutput(result);
   }
