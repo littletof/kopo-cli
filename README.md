@@ -21,8 +21,6 @@ It supports `deno.land/x` and `x.nest.land` by default, but also enables you to 
 deno install --unstable --allow-net -f --name kopo --location https://kopo.mod.land https://deno.land/x/kopo@v0.0.3/mod.ts
 ```
 
-<!-- TODO different entry point, ? cli.ts ? -->
-
 To just try it out, run the following command:
 
 ```bash
@@ -119,11 +117,11 @@ kopo search charmd -e --json
 
 ### Settings
 You can export or import your settings which are stored in localStorage.
-Keep in mind, that this needs `--allow-read` and `--allow-write` flags, so you need to install it with these flags, or run the script with `deno run`
+> If `--allow-read` and `--allow-write` flags are not provided at install, the script will request it in runtime.
 
 ```bash
-deno run --location https://kopo.mod.land --unstable --allow-write mod.ts settings export settings.json
-deno run --location https://kopo.mod.land --unstable --allow-read mod.ts settings import settings.json
+kopo settings export settings.json
+kopo settings import settings.json
 ```
 
 ## Registries and Addons
@@ -157,6 +155,11 @@ kopo -r deno,nest,https://raw.githubusercontent.com/littletof/kopo-cli/remaster/
 
 If the `-r` flag is used, no registry, that is not defined will be accessible.
 Also, if `-r` is not used, you can enable/disable your builtin and through settings added registries in the application.
+
+For example, if you want to search only the `nest` registry you can use:
+```bash
+kopo search kopo -e -r nest --readme
+```
 
 ### 🚩 Flags
 

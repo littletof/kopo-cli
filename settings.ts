@@ -105,7 +105,6 @@ export class Settings {
         return this.settingsStrategy.isSettingsAvailable();
     }
 
-    // TODO vet
     static async getKopoOption(opt: OptionConf) {
         return await Settings.getOption(opt.key, opt.def);
     }

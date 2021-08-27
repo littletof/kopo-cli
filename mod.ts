@@ -30,8 +30,8 @@ ____________________________________________________
                     KOPO CLI
 */
 
-// deno run --allow-net --no-check --unstable --location https://kopo.land index.ts ui
-// deno run --allow-net --no-check --unstable --location https://kopo.land --allow-write --allow-read index.ts settings import ./test.json --yes
+// deno run --allow-net --unstable --location https://kopo.mod.land mod.ts ui
+// deno run --allow-net --unstable --location https://kopo.mod.land --allow-write --allow-read mod.ts settings import ./test.json --yes
 
 async function startUI(args: Args) {
   if (await Settings.getKopoOption(KopoOptions.cls)) {

@@ -57,16 +57,6 @@ export class HomePage {
             await HelpPage.show(args);
         }
     
-        /* if(option === "search") {
-            // TODO just a placeholder
-            UI.cls();
-            const s = await UI.input({
-                message: 'Search module name'
-            });
-            await search({_: ['search', s ], exact: true});
-            await search({_: ['search', s ], exact:true, readme: true});
-        } */
-    
         if(selected !== 'exit') { // TODO remove
             UI.cls();
             await HomePage.show(args);

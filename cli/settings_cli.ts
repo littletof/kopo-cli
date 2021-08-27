@@ -3,7 +3,7 @@ import { Settings } from "../settings.ts";
 
 export async function settingsCLI(args: Args) {
     if(args._.length < 2) {
-        console.error('settings needs export or import HELP'); // TODO help
+        console.error('Settings command needs export or import subcommand');
     }
 
     switch(args._[1]) {

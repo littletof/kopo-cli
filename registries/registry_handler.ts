@@ -50,7 +50,7 @@ export class RegistryHandler {
         const availableRegistries = await RegistryHandler.getRegistries();
 
         if(!availableRegistries.length) {
-            console.log('NO registries available. Check your registry settings!'); // TODO or flags
+            console.log('NO registries available. Check your registry settings!');
         }
 
         let selectedRegistry;

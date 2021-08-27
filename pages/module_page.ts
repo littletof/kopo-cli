@@ -121,16 +121,6 @@ export class ModulePage {
         }
 
         if(moduleOptionsCandidates.other_registries.is(selected)) {
-            /* const others = (await Promise.all((await RegistryHandler.getRegistries()).map(async reg => {
-                const moduleSearch = await reg.getModuleInfo(module.info?.name!);
-                if(!moduleSearch) {
-                    return undefined;
-                }
-                return {reg: reg.getRegistryInfo().key, result: `${moduleSearch?.info?.name}@${moduleSearch?.currentVersion}`}
-            }))).filter(res => !!res).map(res => `${res!.reg} - ${res!.result}`);
-            console.log(others.join('\n'));
-
-            // TODO SHOW searchPage */
             UI.cls();
             await SearchPage.showSearchResult(args, {searchTerm: module.info?.name!, exact: true});
             UI.cls();
@@ -153,7 +143,7 @@ export class ModulePage {
             moduleInfoText += `**Stars:** ${Theme.colors.italic(`${module.info!.start_count}`)}⭐\n`;
         }
         if(module.flags) {
-            moduleInfoText += `**Flags:** ${toEmojiList(module.flags)}\n`; // TODO fix
+            moduleInfoText += `**Flags:** ${toEmojiList(module.flags)}\n`;
         }
         if(module.uploadedAt) {
             moduleInfoText += `**Uploaded at:** ${Intl.DateTimeFormat(undefined, {dateStyle: "short", timeStyle: "short"}).format(module.uploadedAt)}\n`;
