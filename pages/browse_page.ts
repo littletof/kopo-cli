@@ -37,11 +37,15 @@ export class BrowsePage {
             search: UI.selectListOption({name: 'Search', value:'kopo_search'}),
         }
 
+        const emojiStar = Deno.build.os !== "windows" || await Settings.getKopoOption(KopoOptions.winprint);
+        const star = emojiStar ? '⭐' : Theme.colors.yellow('*');
+        const starPad = emojiStar ? 16 : 26;
+
         const selected = await UI.selectList({
             message: '                         ',
             options: [
                 ...moduleList.modules.map(m => UI.selectListOption({
-                    name: `${m.name.padEnd(28)}${isNaN(m.starCount as number) ? '' : `${Theme.colors.italic(`${m.starCount}`)} ${Theme.colors.yellow('*')}`.padStart(26)} - ${Theme.colors.gray(m.description?.slice(0, 50) + (m.description && m.description.length > 50 ? "...": ""))}`, 
+                    name: `${m.name.padEnd(28)}${isNaN(m.starCount as number) ? '' : `${Theme.colors.italic(`${m.starCount}`)} ${star}`.padStart(starPad)} - ${Theme.colors.gray(m.description?.slice(0, 50) + (m.description && m.description.length > 50 ? "...": ""))}`, 
                     value: `kopomodule#${m.name}`
                 })),
                 ...(moduleList.modules.length === 0 ? [UI.listOptions.disabled('No modules found...')] : []),

@@ -1,2 +1,5 @@
 .vscode
 eggs-debug.log
+
+tests/tools/*.in
+tests/tools/*.out

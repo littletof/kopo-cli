@@ -91,7 +91,11 @@ export const KopoOptions: {[key: string]: OptionConf} = {
     "pagesize": {key: "pagesize", name: "Page size", def: 10, valueSet: [5, 10, 25, 50, 100], help: "This defines, how many modules should appear on one page, when\nbrowsing or searching modules.\nOnly change this, if you have enough vertical terminal space."},
 
     "registries": {key: "registries", name: "Registries", hidden: true, def: {}},
-    "registry_addons": {key: "registry_addons", name: "Registry addons", def: [], valueSet: [], valueTf: v => v?.length ? `${v?.length} addons`: 'No addons'}
+    "registry_addons": {key: "registry_addons", name: "Registry addons", def: [], valueSet: [], valueTf: v => v?.length ? `${v?.length} addons`: 'No addons'},
+
+    // UNSTABLE
+
+    "winprint": booleanOption({key: "winprint", name: "Windows print", def: false, hidden: true, help: "unstable. Changes stdout to console log, so special charactes print correctly on windows"}),
 }
 
 export class Settings {

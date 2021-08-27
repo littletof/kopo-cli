@@ -6,6 +6,7 @@ import { UI } from "./ui.ts";
 import { settingsCLI } from "./cli/settings_cli.ts";
 import { RegistryHandler } from "./registries/registry_handler.ts";
 import { search } from "./cli/search_cli.ts";
+import { upInCL } from "./utils.ts";
 
 // TODO rename file to cli.ts
 
@@ -34,6 +35,10 @@ import { search } from "./cli/search_cli.ts";
 async function startUI(args: Args) {
   if (await Settings.getKopoOption(KopoOptions.cls)) {
     UI.cls();
+  }
+
+  if(await Settings.getKopoOption(KopoOptions.winprint)) {
+    Deno.stdout.write = ((x: any) => { console.log(new TextDecoder().decode(x) + upInCL(1));}) as any;
   }
 
   console.log(); // so upInCL+clear doesnt jump
