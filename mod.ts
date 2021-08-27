@@ -79,13 +79,13 @@ async function run() {
 
 await run();
 
-// deno run --allow-net --no-check index.ts search pretty
-// deno run --allow-net --no-check index.ts search pretty --json
-// deno run --allow-net --no-check index.ts search pretty_benching -e
-// deno run --allow-net --no-check index.ts search pretty_benching -e --version v0.0.3
-// deno run --allow-net --no-check index.ts search pretty_benching -e --json
-// deno run --allow-net --no-check index.ts search pretty_benching -e --readme
-// deno run --allow-net --no-check index.ts search pretty_benching -e --readme-raw
+// deno run --allow-net --no-check mod.ts search pretty
+// deno run --allow-net --no-check mod.ts search pretty --json
+// deno run --allow-net --no-check mod.ts search pretty_benching -e
+// deno run --allow-net --no-check mod.ts search pretty_benching -e --version v0.0.3
+// deno run --allow-net --no-check mod.ts search pretty_benching -e --json
+// deno run --allow-net --no-check mod.ts search pretty_benching -e --readme
+// deno run --allow-net --no-check mod.ts search pretty_benching -e --readme-raw
 
 // ---------
 // --no-prompt

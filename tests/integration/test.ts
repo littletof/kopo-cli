@@ -92,7 +92,7 @@ import { upInCL } from "../../utils.ts";
         "deno",
         "run",
         ...flags,
-        'index.ts',
+        'mod.ts',
         "-r", new URL('../test_registry.ts', import.meta.url).href, // TODO not always needed, eg. registrySelect
       ],
       env: {

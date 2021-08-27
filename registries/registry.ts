@@ -1,5 +1,3 @@
-import {paginateArray} from "../utils.ts";
-import {getFlags} from "../flag_parser.ts";
 import type {Flags} from "../flag_parser.ts";
 
 
