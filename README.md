@@ -101,7 +101,9 @@ If you know the module's name you are searching for add `--exact` or `-e` flag.
 ```bash
 kopo search kopo -e
 ```
-This will get the first exact match from the first registry and display the modules info for you. Also, if you have `-e` you can add `--readme` or `--read-raw` so the modules **README** will be printed instead.
+This will get the first exact match from the first registry and display the modules info for you. Also, you can add `-v [exact version]` to get a specific version of the module.
+
+If you have `-e` you can add `--readme` or `--read-raw` so the modules **README** will be printed instead.
 ```bash
 kopo search charmd -e --readme
 ```
@@ -209,6 +211,11 @@ deno run --allow-net https://deno.land/x/kopo@v0.0.3/flag_checker.ts https://raw
 
 Issues, pull requests and feedback are always welcome.
 
+
+## TODOs
+
+- [ ] add module import url processing for search, etc..
+- [ ] more tests
 ## Licence
 
 Copyright 2020- Szalay Kristóf. All rights reserved. MIT license.
