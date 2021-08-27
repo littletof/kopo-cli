@@ -18,7 +18,7 @@ It supports `deno.land/x` and `x.nest.land` by default, but also enables you to 
 `kopo` is intended to be as an installed user script. For that, run:
 
 ```bash
-deno install --unstable --allow-net -f --name kopo --location https://kopo.mod.land https://deno.land/x/kopo@v0.0.3/mod.ts kopo
+deno install --unstable --allow-net -f --name kopo --location https://kopo.mod.land https://deno.land/x/kopo@v0.0.3/mod.ts
 ```
 
 <!-- TODO different entry point, ? cli.ts ? -->
@@ -33,7 +33,7 @@ deno run --unstable --allow-net --location https://kopo.mod.land https://deno.la
 
 - browse the registries
 - search through registries for a keyword/specific module
-- get a specific modules info, eg: description, stars, repo, versions, readme
+- get a specific module's info, eg: description, stars, repo, versions, readme
 - print a module's readme as a formatted markdown text with [charmd](https://deno.land/x/charmd)
 - show what [flags](#-flags) a module requires
 - An addon system, to access private or not yet added registries.
@@ -47,6 +47,7 @@ deno run --unstable --allow-net --location https://kopo.mod.land https://deno.la
 ## As an app
 
 If installed with the command above, you simply need to issue the `kopo` command in your terminal, than the main menu should appear:
+
 ![home](./docs/home.png)
 
 After that, you can navigate the menu using the <kbd>&#8593;</kbd> <kbd>&#8595;</kbd> or <kbd>w</kbd> <kbd>s</kbd> buttons. (On windows you can't use the arrows currently :/ [issue](https://github.com/denoland/deno/issues/5945))
@@ -69,12 +70,14 @@ If the search term isn't a modules name, you can search the registries for that 
 ### Module info
 
 After you select a module, you will see it's info:
+
 ![module_info](docs/module_info.png)
 
 From here, you can print it's README as a formatted MarkDown(using [charmd](https://github.com/littletof/charmd)) if one was found for it, get details about its [flags](#-flags), see other versions of it or see which other registries have this module registered.
 
 ### Settings
 If the `--location` flag was provided, you can access the settings, where you can tailor some features to your likings:
+
 ![settings](docs/settings.png)
 
 ## As a `CLI` tool
