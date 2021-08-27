@@ -8,10 +8,10 @@ export async function settingsCLI(args: Args) {
 
     switch(args._[1]) {
         case "export":
-            await exportSettings(`${args._[2]}`);
+            await exportSettings(args._[2] as any);
             break;
         case "import":
-            await importSettings(`${args._[2]}`, {yes: args.yes})
+            await importSettings(args._[2] as any, {yes: args.yes})
             break;
     }
 }

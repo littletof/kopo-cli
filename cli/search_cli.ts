@@ -2,6 +2,7 @@ import { Args,renderMarkdown } from "../deps.ts";
 import { HomePage } from "../pages/home_page.ts";
 import { ModulePage } from "../pages/module_page.ts";
 import { SearchPage } from "../pages/search_page.ts";
+import { ModulesListPage } from "../registries/registry.ts";
 import { RegistryHandler } from "../registries/registry_handler.ts";
 import { Settings,KopoOptions } from "../settings.ts";
 import { Theme } from "../theme.ts";
@@ -57,34 +58,47 @@ export async function search(args: Args) {
 
             await ModulePage.renderModuleInfo(module);
             return;
-        }
+        } else { // not exact
 
-        const moduleList = await registry.getModulesList(searchTerm);
-        if(moduleList.modules.length) {
-
-            if(args.readme) {
-                console.log("readme without -e?!")
-            }
-
+            // const moduleList = await registry.getModulesList(searchTerm);
+            const registryResult: {[key: string]: ModulesListPage['modules']} = await (await RegistryHandler.getRegistries()).reduce(async (prev, r) => Object.assign(await prev, {[r.getRegistryInfo().key]: (await r.getModulesList(searchTerm)).modules}), Promise.resolve({}));
             if(args.json) {
-                const registryResult = await (await RegistryHandler.getRegistries()).reduce(async (prev, r) => Object.assign(await prev, {[r.getRegistryInfo().key]: (await r.getModulesList(searchTerm)).modules}), Promise.resolve({}));
                 console.log(JSON.stringify(registryResult, undefined, 4));
                 return;
-            } else {
-                console.log(`Found modules: `);
-                moduleList.modules.forEach(m => console.log(`   - ${`${m.name}:`.padEnd(20)} ${m.description?.slice(0, 70) + (!m.description || m.description?.length > 70 ? "…": "")}`))
             }
+            if(Object.keys(registryResult).length && Object.values(registryResult).some((r: ModulesListPage['modules']) => !!r?.length)) {
 
-            
-        } else {
-            console.log("Module not found");
+                if(args.readme) {
+                    // console.log("readme without -e?!")
+                    return;
+                }
+
+                
+                console.log(`Search result in registries: `);
+
+                Object.keys(registryResult).forEach(key => {
+                    if(registryResult[key].length) {
+                        console.log(`\t${key}:`);
+                        registryResult[key].forEach(m => console.log(`\t\t- ${`${m.name}:`.padEnd(20)} ${m.description?.slice(0, 70) + (!m.description || m.description?.length > 70 ? "…": "")}`))
+                    } else {
+                        console.log(`\t${key}: Not found`);
+                    }
+                });              
+
+                
+            } else {
+                console.log("No module found");
+            }
         }
+
+        
     } else {
         if(await Settings.getKopoOption(KopoOptions.cls)) {
             UI.cls();
         }
-        await SearchPage.show(args);
-        UI.cls();
-        return await HomePage.show(args);
+        
+        return await SearchPage.show(args);
+        /* UI.cls();
+        return await HomePage.show(args); */
     }
 }
