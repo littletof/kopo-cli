@@ -24,6 +24,7 @@ async function exportSettings(path?: string) {
 
     const exportPath = path ?? `./${getExportFileName()}`;
 
+    await Deno.permissions.request({name: 'write', path: exportPath});
     Deno.writeTextFileSync(exportPath, JSON.stringify(await Settings.getAllSetOptions(), undefined, 4));
 }
 
@@ -33,6 +34,7 @@ async function importSettings(path: string, options: {yes?: boolean}) {
     }
 
     if(options.yes || confirm('Importing settings will overwrite the current settings. Do you want to continue?')) {
+        await Deno.permissions.request({name: 'read', path});
         const settingsText = Deno.readTextFileSync(path);
         const settings = JSON.parse(settingsText);
 
