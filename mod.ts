@@ -1,10 +1,14 @@
 // Copyright 2020- Szalay Kristóf. All rights reserved. MIT license.
-import { Select } from './deps.ts';
-import { deno_land } from "./registries/deno_land.ts";
-import { nest_land } from "./registries/nest_land.ts";
-import {stateMachine, getMenu} from './state_machine.ts';
-import { MenuItem, State, WorkingMemory } from "./types.ts";
-import { backspace, upInCL } from "./utils.ts";
+import { Args, parse } from "./deps.ts";
+import { KopoOptions, Settings } from "./settings.ts";
+import { Theme } from "./theme.ts";
+import { HomePage } from "./pages/home_page.ts";
+import { UI } from "./ui.ts";
+import { settingsCLI } from "./cli/settings_cli.ts";
+import { RegistryHandler } from "./registries/registry_handler.ts";
+import { search } from "./cli/search_cli.ts";
+import { upInCL } from "./utils.ts";
+
 /*  
 
         /\  /\
@@ -26,40 +30,70 @@ ____________________________________________________
                     KOPO CLI
 */
 
-const workingMemory: WorkingMemory = {
-    state: State.select_registry,
-    registries: {
-        'deno.land': deno_land,
-        'nest.land': nest_land
-    }
-};
+// deno run --allow-net --unstable --location https://kopo.mod.land mod.ts ui
+// deno run --allow-net --unstable --location https://kopo.mod.land --allow-write --allow-read mod.ts settings import ./test.json --yes
 
-Deno.stdout.write = ((x: any) => { console.log(new TextDecoder().decode(x) + upInCL(1));}) as any;
+async function startUI(args: Args) {
+  if (await Settings.getKopoOption(KopoOptions.cls)) {
+    UI.cls();
+  }
 
-let selectedMenu;
-while(selectedMenu !== MenuItem.exit) {
-  selectedMenu = await showModuleMenu(workingMemory);
-  console.log(`\r${upInCL(2)}`);
-  await stateMachine[workingMemory.state](workingMemory, selectedMenu!);
+  if(await Settings.getKopoOption(KopoOptions.winprint)) {
+    Deno.stdout.write = ((x: any) => { console.log(new TextDecoder().decode(x) + upInCL(1));}) as any;
+  }
+
+  console.log(); // so upInCL+clear doesnt jump
+
+  await HomePage.show(args);
 }
 
-async function showModuleMenu(workingMem: WorkingMemory) {
+async function run() {
+  const parsedArgs = parse(Deno.args, {
+    boolean: ["json", "readme", "readme-raw", "exact", "yes", "flags"],
+    alias: { e: "exact", v: "version", y: "yes" },
+  });
 
-    const currentMenu = await getMenu(workingMem);
+  await Theme.init();
+  await RegistryHandler.initRegistries(parsedArgs);
 
-    if(!currentMenu) {
-        return;
+  if (parsedArgs._?.length) {
+    const cmd = parsedArgs._[0];
+
+    switch (cmd) {
+      case "search":
+        await search(parsedArgs);
+        break;
+      case "ui":
+        await startUI(parsedArgs);
+        break;
+
+      case "settings": {
+        await settingsCLI(parsedArgs);
+        break;
+      }
     }
-
-    return await Select.prompt({
-      message: `${backspace(5)}${currentMenu?.title}`,
-      options: currentMenu!.options,
-      keys: {
-        // arrows doesnt work on windows: https://github.com/c4spar/deno-cliffy/issues/47
-        previous: [ 'up', 'w' ],
-        next: [ 'down', 's' ]
-      },
-      default: currentMenu!.default,
-      maxRows: 17,
-    });
+  } else {
+    await startUI(parsedArgs);
+  }
 }
+
+await run();
+
+// deno run --allow-net --no-check mod.ts search pretty
+// deno run --allow-net --no-check mod.ts search pretty --json
+// deno run --allow-net --no-check mod.ts search pretty_benching -e
+// deno run --allow-net --no-check mod.ts search pretty_benching -e --version v0.0.3
+// deno run --allow-net --no-check mod.ts search pretty_benching -e --json
+// deno run --allow-net --no-check mod.ts search pretty_benching -e --readme
+// deno run --allow-net --no-check mod.ts search pretty_benching -e --readme-raw
+
+// ---------
+// --no-prompt
+//      if no registry is defined (-d / -n) in a --readme search eg., select deno, or next in line.
+//      otherwise, if found in multiple registries give a prompt for the user to select from. but they should be the same...
+// -e --detailed
+//      gives all versions, others from json output + readme by default?!
+// search from an import route
+//      kopo find?? https://deno.land/x/kopo@v0.0.2/parse_flags.ts -> kopo search kopo -e -v v0.0.2
+
+// TODO test with module husky

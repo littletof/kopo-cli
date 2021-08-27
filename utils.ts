@@ -22,6 +22,10 @@ export function menuState(name: string, disabled: boolean) {
     }
 }
 
+export function paginateArray<T>(array: T[], page: number, pageSize: number) {
+    return array.slice((Math.max(0, page)-1) * pageSize, Math.min(array.length, page * pageSize));
+}
+
 export async function fetchJSON(path: string): Promise<any> {
     try {
         return await ((await fetch(path)).json());
@@ -31,4 +35,20 @@ export async function fetchJSON(path: string): Promise<any> {
 }
 export async function fetchText(path: string) {
     return await ((await fetch(path)).text());
+}
+
+export function random<T = any>(array: T[], take: number = 1) {
+    // https://stackoverflow.com/a/19270021/1497170
+
+    let result = new Array(take),
+        len = array.length,
+        taken = new Array(len);
+    if (take > len)
+        throw new RangeError("getRandom: more elements taken than available");
+    while (take--) {
+        var x = Math.floor(Math.random() * len);
+        result[take] = array[x in taken ? taken[x] : x];
+        taken[x] = --len in taken ? taken[len] : len;
+    }
+    return result;
 }
