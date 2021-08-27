@@ -83,6 +83,7 @@ import { upInCL } from "../../utils.ts";
   }
   
   export async function runPrompt(filePath: string): Promise<string> {
+    console.log("Registry url", new URL('../test_registry.ts', import.meta.url).href);
     const inputText = await Deno.readTextFile(filePath);
     const flags = getCmdFlagsForFile(filePath);
     const process = Deno.run({
