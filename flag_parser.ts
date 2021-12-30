@@ -1,5 +1,5 @@
 // Copyright 2020- Szalay Kristóf. All rights reserved. MIT license.
-const FtoEMap: any = {
+const FtoEMap: {[key in FlagType]: string} = {
     "--unstable": '🚧',
     "--allow-net": "🌐",
     "--allow-read": "🔍", // 👓
@@ -9,12 +9,13 @@ const FtoEMap: any = {
     "--allow-all": "🔮",
     "--allow-env": "🧭",
     "--allow-plugin": "🧩",
+    "--allow-ffi": "🧩",
     "--location": "🔰"
 }
 
 const flagRegexp = new RegExp(/\| .*\s?\`(--[^`]*)\`\s*\|([\s_\*(?:Y|yes)]*)\|(?:([^\|\n]*)\|)?/g);
 
-export function flagToEmoji(flag: string) {
+export function flagToEmoji(flag: FlagType) {
     return FtoEMap[flag];
 }
 
@@ -32,6 +33,7 @@ export type FlagType =
     | "--allow-all"
     | "--allow-env"
     | "--allow-plugin"
+    | "--allow-ffi"
     | "--location"   
 
 export interface Flags {
