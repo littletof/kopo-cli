@@ -1,6 +1,6 @@
-export * as colors from "https://deno.land/std@0.104.0/fmt/colors.ts";
-export { parse } from "https://deno.land/std@0.104.0/flags/mod.ts";
-export type { Args } from "https://deno.land/std@0.104.0/flags/mod.ts";
+export * as colors from "https://deno.land/std@0.119.0/fmt/colors.ts";
+export { parse } from "https://deno.land/std@0.119.0/flags/mod.ts";
+export type { Args } from "https://deno.land/std@0.119.0/flags/mod.ts";
 
 export { renderMarkdown } from "https://deno.land/x/charmd@v0.0.1/mod.ts";
 
