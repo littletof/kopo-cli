@@ -1,6 +1,7 @@
 import { Args, renderMarkdown } from "../deps.ts";
 import { Theme } from "../theme.ts";
 import { UI } from "../ui.ts";
+import { VERSION } from "../version.ts";
 
 export class HelpPage {
     static async show(args: Args, options?: {}) {
@@ -15,7 +16,7 @@ export class HelpPage {
     }
 
     static readonly helpText = `
-[Version](${/*TODO*/'v0.1.0'})
+[Version](${VERSION})
 [Repository](https://github.com/littletof/kopo-cli)
 [Feedback](https://github.com/littletof/kopo-cli/issues)
 

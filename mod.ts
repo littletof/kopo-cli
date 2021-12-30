@@ -82,7 +82,7 @@ await run();
 // deno run --allow-net --no-check mod.ts search pretty
 // deno run --allow-net --no-check mod.ts search pretty --json
 // deno run --allow-net --no-check mod.ts search pretty_benching -e
-// deno run --allow-net --no-check mod.ts search pretty_benching -e --version v0.1.0
+// deno run --allow-net --no-check mod.ts search pretty_benching -e --version v0.1.1
 // deno run --allow-net --no-check mod.ts search pretty_benching -e --json
 // deno run --allow-net --no-check mod.ts search pretty_benching -e --readme
 // deno run --allow-net --no-check mod.ts search pretty_benching -e --readme-raw

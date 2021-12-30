@@ -18,13 +18,13 @@ It supports `deno.land/x` and `x.nest.land` by default, but also enables you to 
 `kopo` is intended to be as an installed user script. For that, run:
 
 ```bash
-deno install --unstable --allow-net -f --name kopo --location https://kopo.mod.land https://deno.land/x/kopo@v0.1.0/mod.ts
+deno install --unstable --allow-net -f --name kopo --location https://kopo.mod.land https://deno.land/x/kopo@v0.1.1/mod.ts
 ```
 
 To just try it out, run the following command:
 
 ```bash
-deno run --unstable --allow-net --location https://kopo.mod.land https://deno.land/x/kopo@v0.1.0/mod.ts
+deno run --unstable --allow-net --location https://kopo.mod.land https://deno.land/x/kopo@v0.1.1/mod.ts
 ```
 
 ## Features
@@ -179,6 +179,7 @@ Currently it searches for markdown table rows, which contain 2 or 3 columns.
 
 A table could look something like this:
 
+<!-- #DENO_FLAGS_TABLE -->
 |Flag| Required |Reason|
 |:--|:-:|:--|
 | 🚧 `--unstable`  | * | Needed for [Cliffy](https://github.com/c4spar/deno-cliffy) to work |
@@ -189,10 +190,11 @@ A table could look something like this:
 | ⏱ `--allow-hrtime` | _ | Allows precise benchmarking |
 | ⚠ `--allow-run` | _ | Needed for feature x |
 | 🧭 `--allow-env` | _ | Needed to access your ENV |
-| 🧩 `--allow-plugin` | _ | Needed to use RUST plugins |
+| 🧩 `--allow-plugin` | _ | **`Deprecated`** Old plugin system |
+| 🧩 `--allow-ffi` | _ | For Deno plugin system |
 | 🔮 `--allow-all` | _ | It should never be required |
 
-> Also keep in mind, that you can hide this inside a comment is you dont find a proper place for it in your readme, inside the `<!--` `-->` tags, but than only the tools processing your readme can see it.
+> Also keep in mind, that you can hide this inside a comment if you dont find a proper place for it in your readme, inside the `<!--` `-->` tags, but than only the tools processing your readme can see it.
 
 #### Testing your file for flags
 
@@ -201,13 +203,13 @@ There is a small util that you can use to test your file for the flags. It can b
 To use it simply run:
 
 ```bash
-deno run --allow-read https://deno.land/x/kopo@v0.1.0/flag_checker.ts ./README.md
+deno run --allow-read https://deno.land/x/kopo@v0.1.1/flag_checker.ts ./README.md
 ```
 
 or for remote files:
 
 ```bash
-deno run --allow-net https://deno.land/x/kopo@v0.1.0/flag_checker.ts https://raw.githubusercontent.com/littletof/kopo-cli/master/README.md
+deno run --allow-net https://deno.land/x/kopo@v0.1.1/flag_checker.ts https://raw.githubusercontent.com/littletof/kopo-cli/master/README.md
 ```
 
 ## Contribution
