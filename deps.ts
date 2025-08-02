@@ -4,7 +4,6 @@ export type { Args } from "https://deno.land/std@0.119.0/flags/mod.ts";
 
 export { renderMarkdown } from "https://deno.land/x/charmd@v0.0.1/mod.ts";
 
-export { Command } from "https://deno.land/x/cliffy@v0.19.0/command/mod.ts";
-export { Input } from "https://deno.land/x/cliffy@v0.19.1/prompt/input.ts";
-export { Select } from "https://deno.land/x/cliffy@v0.19.1/prompt/select.ts";
-export type { SelectValueOptions } from "https://deno.land/x/cliffy@v0.19.1/prompt/select.ts";
+// TODO need to make sure it works with other repos too, JSR can be fussy about imports
+export { Command } from "jsr:@cliffy/command@1.0.0-rc.8";
+export { Input, Select, type SelectValueOptions } from "jsr:@cliffy/prompt@1.0.0-rc.8";
