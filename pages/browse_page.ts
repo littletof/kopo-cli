@@ -70,11 +70,11 @@ export class BrowsePage {
 
         if(browseOptions.next.is(selected)) {
             UI.cls();
-            await this.showBrowsePage(registry, args, {page: moduleList.page+1, last: moduleList.page+1 !== moduleList.totalPages ? browseOptions.next.value : undefined});
+            await this.showBrowsePage(registry, args, {page: moduleList.page+1, last: moduleList.page+1 !== moduleList.totalPages ? browseOptions.next.value : undefined, query: options.query});
         }
         if(browseOptions.prev.is(selected)) {
             UI.cls();
-            await this.showBrowsePage(registry, args, {page: moduleList.page-1, last: moduleList.page-1 !== 1 ? browseOptions.prev.value : undefined});
+            await this.showBrowsePage(registry, args, {page: moduleList.page-1, last: moduleList.page-1 !== 1 ? browseOptions.prev.value : undefined, query: options.query});
         }
 
         if(selected.startsWith('kopomodule#')) {
