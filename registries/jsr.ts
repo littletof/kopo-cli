@@ -12,7 +12,7 @@ export class JSRRegistry extends Registry {
         return {
             key: JSRRegistry.key,
             name: 'JSR',
-            icon: '🏆🩳📀📒🟨',
+            icon: '🟨',
             url: 'https://jsr.io/',
             description: 'The open-source package registry for modern **JavaScript** and **TypeScript**'
         }

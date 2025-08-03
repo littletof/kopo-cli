@@ -24,42 +24,56 @@ export class DenoRegistry extends Registry {
     }
 
     async getAllModuleNames() {
-        const response = await this.fetch<string[]>("https://api.deno.land/modules?simple=1", {cache: true});
+        const response = await this.fetch<DenoApiV2ModuleInfo[]>("https://apiland.deno.dev/v2/modules", {cache: true});
         if(!response) {
             return [];
         }
 
-        return response.concat("std");
+        return response.map(module => module.name).concat("std");
     }
 
     async getVersionsOfModule(moduleName: string) {
-        const response = await this.fetch<string[]>(`https://deno.land/_vsc1/modules/${moduleName}`, {cache: true});
+        const response = await this.fetch<DenoApiV2ModuleDetail>(`https://apiland.deno.dev/v2/modules/${moduleName}`, {cache: true});
         if(!response) {
             return [];
         }
 
-        return response;
+        return response.versions;
     }
 
     async getModulesList(query?: string, page: number=1, pageSize: number = 20) {
-        const response = await this.fetch<{success?: boolean; data: DenoModuleListDataType}>(
-            `https://api.deno.land/modules?page=${page}&limit=${pageSize}${query? `&query=${query}`: ""}`
+        if(query) {
+            const queried = await this.fetch<{items: string[], isIncomplete: boolean}>(
+                `https://apiland.deno.dev/completions/items/${query}`, { cache: true }
+            );
+            const all = await Promise.all((queried?.items ?? []).map(async i => {
+                return { name: i, description: (await this.fetch<{kind: string, value: string}>(
+                    `https://apiland.deno.dev/completions/resolve/${i}`, { cache: true }
+                ))!.value.split('\n\n')[1]}
+            }));
+            return {modules: all.slice((page-1)*pageSize, page*pageSize), page, pageSize, totalModules: all.length, totalPages: Math.ceil(all.length/pageSize), query};
+        }
+
+
+        const response = await this.fetch<DenoApiV2ModulesList>(
+            `https://apiland.deno.dev/v2/modules?page=${page}&limit=${pageSize}`
         );
-        if(!response?.success) {
+        if(!response) {
             return {modules: [], page, pageSize, totalModules: 0, totalPages: 0, query};
         }
 
-        if(query) {
-            response.data.total_count = response.data.results.length;
-        }
+        // Total count is no longer in API, so get it from module paginator from the page...
+        const xPage = await this.fetch<string>('https://deno.land/x', { text: true, cache: true }) || '';
+        const totalModulesMatch = /<span class="font-bold">\d+<\/span> to <span class="font-bold">\d+<\/span> of <span class="font-bold">(\d+)<\/span>/.exec(xPage);
+        const totalModules = +(totalModulesMatch?.[1] || 8000);
 
         return {
-            modules: (response.data.results || []).map(d => ({name: d.name, description: d.description, starCount: d.star_count})),
+            modules: (response.items || []).map(d => ({name: d.name, description: d.description, starCount: d.star_count})),
             query,
             page,
             pageSize,
-            totalModules: response.data.total_count,
-            totalPages: Math.ceil(response.data.total_count/pageSize),
+            totalModules: totalModules,
+            totalPages: Math.ceil(totalModules/pageSize),
         };
     }
 
@@ -70,9 +84,9 @@ export class DenoRegistry extends Registry {
         // https://cdn.deno.land/MODULE/versions/v0.3.0/meta/meta.json -> {uploaded_at, upload_options: {type: github, repository: "denosaurs/cache", ref: "0.2.12"}, directory_listing: {path: "/cache.ts", size: 2240, type: "file/dir"}[]}
         // https://cdn.deno.land/MODULE/versions/v0.3.0/raw/README.md
 
-        const moduleInfo = await this.fetch<{success: boolean, data: {name: string, description?: string, star_count?: number}}>(`https://api.deno.land/modules/${moduleName}`);
+        const moduleInfo = await this.fetch<DenoApiV2ModuleDetail>(`https://apiland.deno.dev/v2/modules/${moduleName}`);
 
-        if(!moduleInfo || !moduleInfo.success) {
+        if(!moduleInfo) {
             return undefined;
         }
 
@@ -87,9 +101,9 @@ export class DenoRegistry extends Registry {
         moduleData.info = {
             versions: versionInfo?.versions,
             latestVersion: versionInfo?.latest,
-            name: moduleInfo.data.name,
-            description: moduleInfo.data.description,
-            start_count: moduleInfo.data.star_count,
+            name: moduleInfo.name,
+            description: moduleInfo.description,
+            start_count: moduleInfo.star_count,
             moduleRoute: `https://deno.land/x/${moduleName}${version!== versionInfo?.latest ? `@${version}`: ""}`,
         };
         moduleData.invalidVersion = invalidVersion;
@@ -130,4 +144,36 @@ export class DenoRegistry extends Registry {
             default: return `${upload_options.type} - ${upload_options.repository}`;
         }
     }
+}
+
+interface DenoApiV2ModuleInfo {
+    latest_version: string;
+    versions: string[];
+    name:string;
+    description:string;
+    star_count:number;
+    tags:[{kind:"popularity",value:"top_1_percent"}],
+    popularity_score:number;
+}
+
+interface DenoApiV2ModuleDetail {
+    latest_version:string;
+    versions: string[];
+    name: string;
+    description: string;
+    star_count: number;
+    popularity_score: number;
+    tags: unknown[]; // TODO
+    upload_options: { 
+        /** version string */
+        ref: string;
+        type: "github";
+        repository: string;
+    };
+}
+
+interface DenoApiV2ModulesList {
+    next?: `/modules?limit=${number}&page=${number}`,
+    previous?: `/modules?limit=${number}&page=${number}`,
+    items: DenoApiV2ModuleInfo[]
 }
